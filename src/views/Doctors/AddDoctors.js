@@ -852,63 +852,7 @@ const AddDoctors = ({ modalVisible, setModalVisible, clinicId, closeForm, branch
         </CModalHeader>
         <CModalBody>
           <CRow className="g-4 mb-4">
-            <CCol md={6}>
-              <h6>
-                Category Name <span className="text-danger">*</span>
-              </h6>
-              <Select
-                isMulti
-                name="categoryId"
-                value={categoryOptions.filter((opt) => newService.categoryId?.includes(opt.value))}
-                onChange={(selected) => {
-                  handleChanges({
-                    target: {
-                      name: 'categoryId',
-                      value: selected.map((opt) => opt.value),
-                    },
-                  })
-
-                  if (selected.length > 0) {
-                    setFormErrors((prev) => ({ ...prev, categoryId: '' }))
-                  }
-                }}
-                options={categoryOptions}
-                placeholder="Select Category"
-              />
-              {formErrors.categoryId && (
-                <div className="text-danger mt-1">{formErrors.categoryId}</div>
-              )}
-            </CCol>
-
-            <CCol md={6}>
-              <h6>
-                Service Name <span className="text-danger">*</span>
-              </h6>
-              <Select
-                isMulti
-                name="serviceId"
-                value={serviceOptionsFormatted.filter((opt) =>
-                  selectedServices.some((s) => s.serviceId === opt.value),
-                )}
-                onChange={(selected) => {
-                  const selectedServiceObjects = serviceOptions.filter((s) =>
-                    selected.some((sel) => sel.value === s.serviceId),
-                  )
-                  setSelectedServices(selectedServiceObjects)
-                  fetchSubServices(selectedServiceObjects.map((s) => s.serviceId))
-
-                  // Clear error
-                  if (selectedServiceObjects.length > 0) {
-                    setFormErrors((prev) => ({ ...prev, serviceId: '' }))
-                  }
-                }}
-                options={serviceOptionsFormatted}
-                placeholder="Select Services"
-              />
-              {formErrors.serviceId && (
-                <div className="text-danger mt-1">{formErrors.serviceId}</div>
-              )}
-            </CCol>
+         
 
             <CCol md={12}>
               <h6>

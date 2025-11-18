@@ -13,17 +13,17 @@ import {
   CModalBody,
   CModalFooter,
   CRow,
-  CBadge,
+
   CCol,
   CFormSelect,
   CCardBody,
   CCard,
-  CFormLabel,
+
 } from '@coreui/react'
 import DataTable from 'react-data-table-component'
 import CIcon from '@coreui/icons-react'
 import { cilSearch } from '@coreui/icons'
-import { FaTrash, FaPlus } from 'react-icons/fa'
+
 
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -39,8 +39,7 @@ import {
 import {
   // subService_URL,
   getservice,
-  MainAdmin_URL,
-  getadminSubServicesbyserviceId,
+
   BASE_URL,
 } from '../../baseUrl'
 import ProcedureQA from './QASection'
@@ -55,20 +54,17 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
   const [filteredData, setFilteredData] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [timeInput, setTimeInput] = useState('')
-  const [timeSlots, setTimeSlots] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [viewService, setViewService] = useState(null)
   const [editServiceMode, setEditServiceMode] = useState(false)
   const [question, setQuestion] = useState('')
-  const [answerInput, setAnswerInput] = useState('')
   const [answers, setAnswers] = useState([])
   const [qaList, setQaList] = useState([])
   const [serviceOptions, setServiceOptions] = useState([])
   const [subServiceOptions, setSubServiceOptions] = useState([])
   const [selectedSubService, setSelectedSubService] = useState('')
   const [subServiceId, setSubServiceId] = useState('')
-  const [previewImage, setPreviewImage] = useState(null)
+
 
   const [serviceToEdit, setServiceToEdit] = useState({
     subServiceImage: '',
@@ -77,26 +73,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     serviceName: '',
     subServiceImageFile: null,
   })
-  const [qaPreProcedure, setQaPreProcedure] = useState([])
-  const [qaProcedure, setQaProcedure] = useState([])
-  const [qaPostProcedure, setQaPostProcedure] = useState([])
 
-  const addQuestionAnswer = (section, question, answers) => {
-    const newQA = { question, answers }
-
-    if (section === 'preProcedure') {
-      setQaPreProcedure([...qaPreProcedure, newQA])
-    } else if (section === 'procedure') {
-      setQaProcedure([...qaProcedure, newQA])
-    } else if (section === 'postProcedure') {
-      setQaPostProcedure([...qaPostProcedure, newQA])
-    }
-  }
-  // Mapping for display
-  const consentFormTypeLabels = {
-    1: 'Generic ConsentForm',
-    2: 'Procedure ConsentForm',
-  }
 
   let descriptionQA = []
   try {
@@ -110,9 +87,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
   }
 
   const [newService, setNewService] = useState({
-    categoryName: '',
     categoryId: '',
-    serviceName: '',
     subServiceName: '',
     subServiceImage: '',
     serviceId: '',
@@ -122,110 +97,13 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     price: '',
     gst: 0,
     consultationFee: 0,
-    // preProcedure: '',
-    // postProcedure: '',
     procedureQA: [],
     preProcedureQA: [],
     postProcedureQA: [],
   })
   const [modalMode, setModalMode] = useState('add') // or 'edit'
-  const [editingIndex, setEditingIndex] = useState(null)
   const [editingValue, setEditingValue] = useState('')
-  // ✅ Handle Add QA
-  const handleAddQA = (type) => {
-    if (editingValue.trim() === '') return
-    setNewService((prev) => ({
-      ...prev,
-      [type]: [...prev[type], editingValue],
-    }))
-    setEditingValue('')
-  }
 
-  // ✅ Handle Remove QA
-  const handleRemoveQA = (type, index) => {
-    setNewService((prev) => ({
-      ...prev,
-      [type]: prev[type].filter((_, i) => i !== index),
-    }))
-  }
-
-  // ✅ Handle Edit QA (start editing)
-  const handleEditQA = (type, index) => {
-    setEditingIndex({ type, index })
-    setEditingValue(newService[type][index])
-  }
-
-  // ✅ Handle Save Edit QA
-  const handleSaveQA = () => {
-    if (!editingIndex) return
-    const { type, index } = editingIndex
-    setNewService((prev) => {
-      const updated = [...prev[type]]
-      updated[index] = editingValue
-      return { ...prev, [type]: updated }
-    })
-    setEditingIndex(null)
-    setEditingValue('')
-  }
-
-  // ✅ Handle Cancel Edit
-  const handleCancelEdit = () => {
-    setEditingIndex(null)
-    setEditingValue('')
-  }
-
-  // ✅ Save Service (Add / Update)
-  const handleSaveService = () => {
-    const price = Number(newService.price || 0)
-    const discountPercentage = parseFloat(newService.discountPercentage || 0)
-    const taxPercentage = parseFloat(newService.taxPercentage || 0)
-    const gst = parseFloat(newService.gst || 0)
-    const consultationFee = parseFloat(newService.consultationFee || 0)
-
-    // discount calc
-    const discountAmount = (price * discountPercentage) / 100
-    const discountedCost = price - discountAmount
-
-    // tax calc
-    const taxAmount = (discountedCost * taxPercentage) / 100
-    const finalCost = discountedCost + taxAmount + consultationFee
-
-    const payload = {
-      clinicId: clinicId,
-
-      serviceId: newService.serviceId,
-      serviceName: newService.serviceName,
-      categoryId: newService.categoryId,
-      categoryName: newService.categoryName,
-      subServiceId: newService.subServiceId,
-      subServiceName: newService.subServiceName,
-
-      viewDescription: newService.viewDescription,
-      // consentFormType: newService.consentFormType,
-      consentFormType: Number(newService.consentFormType),
-      status: 'Active',
-      minTime: newService.minTime,
-
-      preProcedureQA: newService.preProcedureQA,
-      procedureQA: newService.procedureQA,
-      postProcedureQA: newService.postProcedureQA,
-
-      price,
-      discountPercentage,
-      discountAmount,
-      discountedCost,
-      taxPercentage,
-      taxAmount,
-      gst,
-      consultationFee,
-      finalCost,
-
-      subServiceImage: newService.subServiceImage || '',
-    }
-
-    console.log('Final Payload:', payload)
-    // 👉 call API here
-  }
 
   // Open for adding
   const openAddModal = () => {
@@ -235,9 +113,9 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     setQuestion('')
     setSelectedSubService('')
     setNewService({
-      categoryName: '',
+
       categoryId: '',
-      serviceName: '',
+
       serviceId: '',
       subServiceId: '',
       subServiceName: '',
@@ -247,12 +125,12 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       consultationFee: 0,
       minTime: '',
       taxPercentage: 0,
-      status: '',
+
       subServiceImage: '',
       subServiceImageFile: null,
       viewImage: '',
       viewDescription: '',
-      consentFormType: serviceData.consentFormType === 'Generic ConsentForm' ? '1' : '2',
+
       platformFeePercentage: 0,
       descriptionQA: [],
     })
@@ -329,10 +207,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     setNewService({
       subServiceId: resolvedSubServiceId,
       subServiceName: resolvedSubServiceName,
-      serviceName: service.serviceName || '',
-      serviceId: serviceId,
-      categoryName: service.categoryName || '',
-      categoryId: categoryId || '',
       price: service.price || '',
       discount: service.discountPercentage || 0,
       gst: service.gst || 0,
@@ -342,9 +216,9 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       subServiceImage: rawImage,
 
       subServiceImageFile: null,
-      status: service.status || '',
+
       viewDescription: service.viewDescription || '',
-      consentFormType: service.consentFormType ? String(service.consentFormType) : '',
+
 
       platformFeePercentage: service.platformFeePercentage || 0,
       // descriptionQA: formattedQA,
@@ -356,32 +230,24 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     setQaList(formattedQA)
   }
 
-  const addAnswer = () => {
-    if (answerInput.trim()) {
-      setAnswers([...answers, answerInput.trim()])
-      setAnswerInput('')
-    }
-  }
 
-  const removeAnswer = (answerToRemove) => {
-    setAnswers(answers.filter((ans) => ans !== answerToRemove))
-  }
+
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [serviceIdToDelete, setServiceIdToDelete] = useState(null)
   const [errors, setErrors] = useState({
     subServiceName: '',
-    serviceName: '',
+
     serviceId: '',
-    categoryName: '',
+
     price: '',
-    status: '',
+
     taxPercentage: '',
     descriptionQA: '',
     answers: '',
     minTime: '',
     discount: '',
     viewDescription: '',
-    consentFormType: '',
+
     subServiceImage: '',
     bannerImage: '',
   })
@@ -477,87 +343,49 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     handleSearch()
   }, [searchQuery, service])
 
-  const handleEditClick = (serviceItem) => {
-    setServiceToEdit(serviceItem)
-    setEditServiceMode(true)
-  }
 
   const columns = [
     {
-      name: 'S.No',
+      name: "S.No",
       selector: (row, index) => index + 1,
       sortable: false,
       center: true,
-      width: '180px',
+      width: "10%",  // ✅ changed from px to %
     },
     {
-      name: 'Procedure Name',
-      selector: (row) => row.subServiceName || 'N/A',
+      name: "Procedure Name",
+      selector: (row) => row.subServiceName || "N/A",
       sortable: true,
-      width: '180px',
-      cell: (row) => <span style={{ color: "#7e3a93" }}>{row.subServiceName}</span>,
-    },
-    {
-      name: 'Service Name',
-      selector: (row) => row.serviceName || 'N/A',
-      width: '180px',
-      cell: (row) => <span style={{ color: "#7e3a93" }}>{row.serviceName}</span>,
-    },
-    {
-      name: 'Category Name',
-      selector: (row) => row.categoryName || 'N/A',
-      width: '180px',
-      cell: (row) => <span style={{ color: "#7e3a93" }}>{row.categoryName}</span>,
-    },
-    {
-      name: 'Price',
-      selector: (row) => `₹${row.price || '0'}`,
-      width: '180px',
+      width: "40%",  // ✅ bigger, responsive
       cell: (row) => (
-        <span style={{ color: "#7e3a93" }}>{`₹${row.price || '0'}`}</span>
+        <span style={{ color: "#7e3a93" }}>{row.subServiceName}</span>
       ),
     },
     {
-      name: 'Actions',
-      width: '180px',
+      name: "Price",
+      selector: (row) => `₹${row.price || "0"}`,
+      width: "20%", // ✅ responsive width
+      cell: (row) => (
+        <span style={{ color: "#7e3a93" }}>{`₹${row.price || "0"}`}</span>
+      ),
+    },
+    {
+      name: "Actions",
+      width: "30%", // ✅ large enough for buttons
       center: true,
       cell: (row) => (
         <div className="d-flex justify-content-center gap-2">
-          <button
-            className="actionBtn"
-            title="View"
-            onClick={() => setViewService(row)}
-          >
+          <button className="actionBtn" title="View" onClick={() => setViewService(row)}>
             <Eye size={18} />
           </button>
 
-          <button
-            className="actionBtn"
-            title="Edit"
-            onClick={() => openEditModal(row)}
-          >
+          <button className="actionBtn" title="Edit" onClick={() => openEditModal(row)}>
             <Edit2 size={18} />
           </button>
 
-          <button
-            className="actionBtn"
-            title="Delete"
-            onClick={() => handleServiceDelete(row)}
-          >
+          <button className="actionBtn" title="Delete" onClick={() => handleServiceDelete(row)}>
             <Trash2 size={18} />
           </button>
-
-          <ConfirmationModal
-            isVisible={isModalVisible}
-            title="Delete Procedure"
-            message="Are you sure you want to delete this procedure? This action cannot be undone."
-            confirmText="Yes, Delete"
-            cancelText="Cancel"
-            confirmColor="danger"
-            cancelColor="secondary"
-            onConfirm={handleConfirmDelete}
-            onCancel={handleCancelDelete}
-          />
         </div>
       ),
     },
@@ -569,13 +397,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     const newErrors = {}
 
 
-    if (!newService.serviceName) {
-      newErrors.serviceName = 'Service name is required.'
-    }
-
-    if (!newService.categoryName) {
-      newErrors.categoryName = 'Category is required.'
-    }
     if (!newService.subServiceName) {
       newErrors.subServiceName = 'Procedure Name is required'
     }
@@ -588,9 +409,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       newErrors.price = 'price cannot be a negative number.'
     }
 
-    if (!newService.status) {
-      newErrors.status = 'Status is required.'
-    }
+
     if (newService.gst === '' || isNaN(newService.gst) || parseFloat(newService.gst) < 0) {
       newErrors.gst = 'GST must be a valid number and not negative.'
     }
@@ -617,9 +436,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     if (!newService.viewDescription) {
       newErrors.viewDescription = 'View description is Required.'
     }
-    if (!newService.consentFormType) {
-      newErrors.consentFormType = 'consentFormType is Required.'
-    }
+
 
     if (!newService.subServiceImage) {
       console.log('Service Image in Form:', newService.serviceImage)
@@ -634,54 +451,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     return Object.keys(newErrors).length === 0
   }
 
-  const saveCurrentQA = () => {
-    if (question.trim() && answers.length > 0) {
-      const newQA = { [question.trim()]: [...answers] }
-
-      // Add to local qaList
-      const updatedQaList = [...qaList, newQA]
-      setQaList(updatedQaList)
-
-      // Also update the newService object
-      setNewService((prev) => ({
-        ...prev,
-        descriptionQA: updatedQaList,
-      }))
-
-      // Clear input fields
-      setQuestion('')
-      setAnswers([])
-    }
-  }
-
-  const removeQA = (indexToRemove) => {
-    const updatedQAList = qaList.filter((_, index) => index !== indexToRemove)
-
-    // Update both qaList and newService.descriptionQA
-    setQaList(updatedQAList)
-    setNewService((prev) => ({
-      ...prev,
-      descriptionQA: updatedQAList,
-    }))
-  }
-
-  const buildQA = (question, answers, qaList) => {
-    const finalQA = [...qaList]
-
-    // Include the latest unsaved input, if any
-    if (question.trim() && answers.length > 0) {
-      finalQA.push({ [question.trim()]: [...answers] })
-    }
-
-    return finalQA
-  }
-  const buildDescriptionQA = () => {
-    return {
-      general: buildQA(question, answers, qaList),
-      preProcedure: buildQA(preQuestion, preAnswers, preQaList),
-      postProcedure: buildQA(postQuestion, postAnswers, postQaList),
-    }
-  }
   const handleAddService = async () => {
     const isValid = validateForm(); // ✅ Call it here
 
@@ -710,10 +479,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       hospitalId: clinicId,
       subServiceName: newService.subServiceName,
       subServiceId: newService.subServiceId,
-      serviceId: newService.serviceId,
-      serviceName: newService.serviceName,
-      categoryName: newService.categoryName,
-      categoryId: newService.categoryId,
 
       price: newService.price,
       discountPercentage: newService.discount,
@@ -729,14 +494,14 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       consultationFee: newService.consultationFee,
 
       minTime: formattedMinTime,
-      status: newService.status,
+
       subServiceImage: newService.subServiceImage,
 
       procedureQA: newService.procedureQA,
       preProcedureQA: newService.preProcedureQA,
       postProcedureQA: newService.postProcedureQA,
       viewDescription: newService.viewDescription,
-      consentFormType: Number(newService.consentFormType), // backend receives 1 or 2
+
     }
 
     console.log('Payload ready to submit:', payload)
@@ -757,10 +522,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
     setNewService({
       hospitalId: '',
-      categoryName: '',
-      categoryId: '',
-      serviceName: '',
-      serviceId: '',
       subServiceId: '',
       subServiceName: '',
       price: 0,
@@ -770,11 +531,11 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       taxPercentage: 0,
       minTimeValue,
       minTimeUnit: '',
-      status: '',
+
       subServiceImage: '',
       subServiceImageFile: '',
       viewDescription: '',
-      consentFormType: '',
+
       procedureQA: [],
       preProcedureQA: [],
       postProcedureQA: [],
@@ -801,23 +562,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       : `${hours} hour${hours > 1 ? 's' : ''} ${remainingMins} min`
   }
 
-  const handleServiceFileChange = (e) => {
-    const file = e.target.files[0]
-
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const base64String = reader.result?.split(',')[1] || ''
-        setNewService((prev) => ({
-          ...prev,
-          subServiceImage: base64String,
-          subServiceImageFile: file,
-        }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
   const handleUpdateService = async () => {
     try {
       let base64ImageToSend = ''
@@ -839,8 +583,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         clinicId,
         subServiceName: newService.subServiceName || '',
         viewDescription: newService.viewDescription || '',
-        consentFormType: Number(newService.consentFormType),
-        status: newService.status || '',
         minTime: newService.minTimeValue
           ? `${newService.minTimeValue} ${newService.minTimeUnit}`
           : '',
@@ -956,87 +698,22 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
   const AddCancel = () => {
     setNewService({
-      serviceName: '',
-      categoryName: '',
-
       price: '',
       discount: 0,
       taxPercentage: 0,
       minTime: '',
       minTimeValue: '', //reset value
       minTimeUnit: 'minutes', // reset unit
-      status: '',
       subServiceImage: '',
       viewImage: '',
       viewDescription: '',
-      consentFormType: '',
+
       categoryId: '',
     })
     setModalVisible(false)
 
     setErrors({})
   }
-
-  const handleChanges = async (e) => {
-    const { name, value } = e.target
-
-    if (name === 'categoryId') {
-      const selectedCategory = category.find((cat) => cat.categoryId === value)
-
-      setNewService((prev) => ({
-        ...prev,
-        categoryName: selectedCategory?.categoryName || '',
-        categoryId: value,
-        serviceName: '',
-        serviceId: '',
-      }))
-
-      try {
-        const res = await axios.get(`${BASE_URL}/${getservice}/${value}`)
-        const serviceList = res.data?.data || []
-        setServiceOptions(serviceList)
-        console.log('my new service', newService)
-      } catch (err) {
-        console.error('Failed to fetch services:', err)
-        setServiceOptions([])
-      }
-    } else if (name === 'serviceName') {
-      const selectedService = serviceOptions.find((s) => s.serviceName === value)
-      const serviceId = selectedService?.serviceId || ''
-
-      setNewService((prev) => ({
-        ...prev,
-        serviceName: value,
-        serviceId,
-      }))
-
-      if (serviceId) {
-        try {
-          const subRes = await subServiceData(serviceId)
-          const subList = subRes.data
-          let allSubServices = []
-
-          if (Array.isArray(subList)) {
-            allSubServices = subList.flatMap((item) => item.subServices || [])
-
-          } else if (subList?.subServices) {
-            allSubServices = subList.subServices
-          }
-
-          setSubServiceOptions({ subServices: allSubServices })
-        } catch (err) {
-          console.error('Failed to fetch subservices:', err)
-          setSubServiceOptions({ subServices: [] })
-        }
-      }
-    } else {
-      setNewService((prev) => ({
-        ...prev,
-        [name]: value,
-      }))
-    }
-  }
-
 
 
   return (
@@ -1097,32 +774,10 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                     <strong>Procedure ID:</strong> {viewService.subServiceId}
 
                   </CCol>
-                  <CCol sm={6}>
-                    <strong>Service Name:</strong> {viewService.serviceName}
 
-                  </CCol>
-                  <CCol sm={6}>
-                    <strong>Service ID:</strong> {viewService.serviceId}
 
-                  </CCol>
-                  <CCol sm={6}>
-                    <strong>Category Name:</strong> {viewService.categoryName}
 
-                  </CCol>
-                  <CCol sm={6}>
-                    <strong>Category ID:</strong> {viewService.categoryId}
 
-                  </CCol>
-                  <CCol sm={6}>
-                    <strong>Consent Form Type:</strong> {consentFormTypeLabels[viewService.consentFormType] || "N/A"}
-
-                  </CCol>
-                  <CCol sm={6}>
-                    <strong>Status:</strong>  <CBadge color={viewService.status === "Active" ? "success" : "secondary"}>
-                      {viewService.status}
-                    </CBadge>
-
-                  </CCol>
                 </CRow>
               </CCardBody>
             </CCard>
@@ -1238,52 +893,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         <CModalBody>
           <CForm>
             <CRow className="mb-4">
-              <CCol md={4}>
-                <h6>
-                  Category Name <span className="text-danger">*</span>
-                </h6>
-                <CFormSelect
-                  value={newService.categoryId || ''}
-                  onChange={handleChanges}
-                  aria-label="Select Category"
-                  name="categoryId" // must match state property
-                  disabled={modalMode === 'edit'}
-                >
-                  <option value="">Select a Category</option>
-                  {category?.map((cat) => (
-                    <option key={cat.categoryId} value={cat.categoryId}>
-                      {cat.categoryName}
-                    </option>
-                  ))}
-                </CFormSelect>
 
-
-                {errors.categoryName && (
-                  <CFormText className="text-danger">{errors.categoryName}</CFormText>
-                )}
-              </CCol>
-              <CCol md={4}>
-                <h6>
-                  Service Name <span className="text-danger">*</span>
-                </h6>
-                <CFormSelect
-                  name="serviceName"
-                  value={newService.serviceName || ''}
-                  onChange={handleChanges}
-                  disabled={modalMode === 'edit'}
-                >
-                  <option value="">Select Service</option>
-                  {serviceOptions.map((service) => (
-                    <option key={service.serviceId} value={service.serviceName}>
-                      {service.serviceName}
-                    </option>
-                  ))}
-                </CFormSelect>
-
-                {errors.serviceName && (
-                  <CFormText className="text-danger">{errors.serviceName}</CFormText>
-                )}
-              </CCol>
               <CCol md={4}>
                 <h6>
                   Procedure Name <span className="text-danger">*</span>
@@ -1323,8 +933,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   <CFormText className="text-danger">{errors.subServiceName}</CFormText>
                 )}
               </CCol>
-            </CRow>
-            <CRow className="mb-4">
               <CCol md={4}>
                 <h6>
                   Procedure Image <span className="text-danger">*</span>
@@ -1377,103 +985,9 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   <CFormText className="text-danger">{errors.viewDescription}</CFormText>
                 )}
               </CCol>
-
-              <CCol md={4}>
-                <h6>
-                  Status <span className="text-danger">*</span>
-                </h6>
-                <CFormSelect value={newService.status || ''} onChange={handleChange} name="status">
-                  <option value="">Select</option>
-                  <option value="Active">Active</option>
-                  <option value="InActive">Inactive</option>
-                </CFormSelect>
-                {errors.status && <CFormText className="text-danger">{errors.status}</CFormText>}
-              </CCol>
             </CRow>
 
             <CRow className="mb-4">
-              <CCol md={4}>
-                <CFormLabel>
-                  ConsentFormType<span className="text-danger">*</span>
-                </CFormLabel>
-                <CFormSelect
-                  value={newService.consentFormType || ''} // backend value ("1" or "2")
-                  onChange={(e) =>
-                    setNewService((prev) => ({
-                      ...prev,
-                      consentFormType: e.target.value, // still "1" or "2"
-                    }))
-                  }
-                >
-                  <option value="">Select consentFormType</option>
-                  <option value="1">Generic ConsentForm</option>
-                  <option value="2">Procedure ConsentForm</option>
-                </CFormSelect>
-
-                {errors.consentFormType && (
-                  <CFormText className="text-danger">{errors.consentFormType}</CFormText>
-                )}
-              </CCol>
-              <CCol md={4}>
-                <h6>
-                  Consultation Fee<span className="text-danger">*</span>
-                </h6>
-                <CFormInput
-                  type="number"
-                  value={newService.consultationFee || ''}
-                  onChange={(e) =>
-                    setNewService((prev) => ({
-                      ...prev,
-                      consultationFee: Number(e.target.value),
-                    }))
-                  }
-                />
-              </CCol>
-              <CCol>
-                <div className="mb-4">
-                  <h6>
-                    Min Time <span className="text-danger">*</span>
-                  </h6>
-                  <div className="d-flex">
-                    {/* Number Input */}
-                    <CFormInput
-                      type="number"
-                      name="minTimeValue"
-                      value={newService.minTimeValue || ''}
-                      onChange={(e) =>
-                        setNewService({ ...newService, minTimeValue: e.target.value })
-                      }
-                      placeholder="Enter time"
-                    />
-
-                    {/* Dropdown for Unit */}
-                    <CFormSelect
-                      name="minTimeUnit"
-                      className="ms-2"
-                      value={newService.minTimeUnit || ''}
-                      onChange={(e) =>
-                        setNewService({ ...newService, minTimeUnit: e.target.value })
-                      }
-                    >
-                      <option value="" disabled>
-                        Select Time
-                      </option>
-                      <option value="minutes">Minutes</option>
-                      <option value="hours">Hours</option>
-                    </CFormSelect>
-                  </div>
-
-                  {/* Validation error */}
-                  {errors.minTime && (
-                    <CFormText className="text-danger">{errors.minTime}</CFormText>
-                  )}
-                </div>
-              </CCol>
-            </CRow>
-            <CRow className="mb-4">
-
-
-
               <CCol md={3}>
                 <h6>
                   Procedure Price <span className="text-danger">*</span>
@@ -1599,8 +1113,10 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         <div
           className="border rounded p-3 shadow-sm"
           style={{
-            backgroundColor: '#fff',
-            borderColor: '#e0e0e0',
+            backgroundColor: "#fff",
+            borderColor: "#e0e0e0",
+            width: "100%",
+            maxWidth: "100%",
           }}
         >
           <DataTable
@@ -1655,6 +1171,12 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
         </div>
       )}
+
+
+
+
+
+
     </div>
   )
 }

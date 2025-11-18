@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   CFormInput,
+  CFormSelect,
   CButton,
   CModal,
   CModalHeader,
@@ -40,7 +41,7 @@ const ProcedureManagement = () => {
   const [deleteServiceId, setDeleteServiceId] = useState(null)
   const [errors, setErrors] = useState({ subService: '' })
 
-  // Pagination state
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
 
@@ -52,7 +53,8 @@ const ProcedureManagement = () => {
     setLoading(true)
     try {
       const result = await getAllSubServices()
-      const formattedSubServices = result.flatMap((category) =>
+
+      const formatted = result.flatMap((category) =>
         Array.isArray(category.subServices)
           ? category.subServices.map((sub) => ({
             id: sub.subServiceId,
@@ -60,7 +62,8 @@ const ProcedureManagement = () => {
           }))
           : []
       )
-      setSubServices(formattedSubServices)
+
+      setSubServices(formatted)
     } catch (err) {
       setError('Failed to fetch procedures')
       console.error(err)
@@ -85,8 +88,9 @@ const ProcedureManagement = () => {
 
     try {
       const payload = { subServices: [{ subServiceName: trimmedInput }] }
+
       const res = editMode
-        ? await postSubService(payload, editSubServiceId) // Adjust API if edit needs PUT
+        ? await postSubService(payload, editSubServiceId)
         : await postSubService(payload)
 
       if (res?.data?.success) {
@@ -142,21 +146,28 @@ const ProcedureManagement = () => {
   const totalPages = Math.ceil(subServices.length / itemsPerPage)
 
   return (
-    <div className="container-fluid p-4">
+    <>
       <ToastContainer />
-      <CCard>
-        <CCardHeader className="d-flex justify-content-between align-items-center">
-          <h4 className="mb-0">Procedure Management</h4>
-          <CButton
-            style={{ backgroundColor: COLORS.black, color: 'white' }}
-            onClick={() => {
-              setEditMode(false)
-              setSubServiceInput('')
-              setShowModal(true)
-            }}
-          >
-            + Add New Procedure
-          </CButton>
+
+      <CCard className="mt-4">
+        <CCardHeader>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4 className="mb-0" style={{ color: COLORS.black}}>
+              Procedure Management
+            </h4>
+
+            <CButton
+              color="secondary"
+              style={{ backgroundColor: 'var(--color-black)', color: COLORS.white }}
+              onClick={() => {
+                setEditMode(false)
+                setSubServiceInput('')
+                setShowModal(true)
+              }}
+            >
+              + Add New Procedure
+            </CButton>
+          </div>
         </CCardHeader>
 
         {loading ? (
@@ -165,19 +176,21 @@ const ProcedureManagement = () => {
           <div>{error}</div>
         ) : (
           <CTable striped hover responsive>
-            <CTableHead>
+            <CTableHead className="pink-table">
               <CTableRow>
                 <CTableHeaderCell>S.No</CTableHeaderCell>
                 <CTableHeaderCell>Procedure</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Actions</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
-            <CTableBody>
+
+            <CTableBody className="pink-table">
               {currentItems.length > 0 ? (
                 currentItems.map((row, index) => (
                   <CTableRow key={row.id}>
                     <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
                     <CTableDataCell>{row.name}</CTableDataCell>
+
                     <CTableDataCell className="text-center">
                       <div className="d-flex justify-content-center align-items-center gap-2">
                         <button className="actionBtn" onClick={() => handleView(row)} title="View">
@@ -188,9 +201,15 @@ const ProcedureManagement = () => {
                           <Edit2 size={18} />
                         </button>
 
-                        <button className="actionBtn" onClick={() => confirmDelete(row.id)} title="Delete" >
-                          <Trash2 size={18} /> </button> </div> </CTableDataCell>
-
+                        <button
+                          className="actionBtn"
+                          onClick={() => confirmDelete(row.id)}
+                          title="Delete"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </CTableDataCell>
                   </CTableRow>
                 ))
               ) : (
@@ -204,34 +223,39 @@ const ProcedureManagement = () => {
           </CTable>
         )}
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         {subServices.length > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-3">
+          <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
             <div>
-              <span className="me-2">Rows per page:</span>
-              <select
+              <label className="me-2">Rows per page:</label>
+              <CFormSelect
                 value={itemsPerPage}
                 onChange={(e) => {
                   setItemsPerPage(Number(e.target.value))
                   setCurrentPage(1)
                 }}
+                style={{ width: '80px', display: 'inline-block' }}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
-              </select>
+              </CFormSelect>
             </div>
+
             <div>
-              <span className="me-3">
-                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, subServices.length)} of {subServices.length} entries
-              </span>
-              <CPagination>
+              <div>
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, subServices.length)} of{' '}
+                {subServices.length} entries
+              </div>
+
+              <CPagination align="end">
                 <CPaginationItem
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 >
                   Previous
                 </CPaginationItem>
+
                 {[...Array(totalPages)].map((_, i) => (
                   <CPaginationItem
                     key={i + 1}
@@ -241,9 +265,10 @@ const ProcedureManagement = () => {
                     {i + 1}
                   </CPaginationItem>
                 ))}
+
                 <CPaginationItem
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 >
                   Next
                 </CPaginationItem>
@@ -252,8 +277,8 @@ const ProcedureManagement = () => {
           </div>
         )}
 
-        {/* Add/Edit Procedure Modal */}
-        <CModal visible={showModal} onClose={() => setShowModal(false)} size="md">
+        {/* Add/Edit Modal */}
+        <CModal visible={showModal} onClose={() => setShowModal(false)}>
           <CModalHeader closeButton>
             <CModalTitle>{editMode ? 'Edit Procedure' : 'Add New Procedure'}</CModalTitle>
           </CModalHeader>
@@ -263,7 +288,7 @@ const ProcedureManagement = () => {
               value={subServiceInput}
               onChange={(e) => {
                 setSubServiceInput(e.target.value)
-                if (e.target.value.trim() !== '') setErrors({ subService: '' })
+                if (e.target.value.trim()) setErrors({ subService: '' })
               }}
               invalid={!!errors.subService}
             />
@@ -279,7 +304,7 @@ const ProcedureManagement = () => {
           </CModalFooter>
         </CModal>
 
-        {/* View Procedure Modal */}
+        {/* View Modal */}
         <CModal visible={viewModal} onClose={() => setViewModal(false)}>
           <CModalHeader closeButton>
             <CModalTitle>Procedure Details</CModalTitle>
@@ -293,7 +318,7 @@ const ProcedureManagement = () => {
           </CModalFooter>
         </CModal>
 
-        {/* Delete Confirmation Modal */}
+        {/* Delete Confirmation */}
         {showDeleteModal && (
           <ConfirmationModal
             isVisible={showDeleteModal}
@@ -303,7 +328,7 @@ const ProcedureManagement = () => {
           />
         )}
       </CCard>
-    </div>
+    </>
   )
 }
 

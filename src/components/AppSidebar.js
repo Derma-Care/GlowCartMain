@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import Logo from './header/DermaLogoP.png'
+import Logo from './header/GlowKaart.png'
 
 import {
   CCloseButton,
@@ -41,7 +41,7 @@ const AppSidebar = () => {
           <div className="d-flex justify-content-center">
             <img
               src={Logo}
-              alt="DermaCare Logo"
+              alt="Glowkart Logo"
               style={{ width: '140px', height: '120px', marginBottom: '0px', marginLeft: '30px' }}
             />
           </div>
