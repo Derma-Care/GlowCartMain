@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import routes from './routes'
 import ProtectedRoute from './components/ProtectedRoute'
 import { injectTheme } from './Constant/Themes'
+import './scss/style.scss'
 
 // Lazy-loaded default pages
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
