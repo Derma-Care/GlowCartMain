@@ -32,6 +32,7 @@ import { toast } from 'react-toastify'
 import DoctorCard from '../Doctors/DoctorCard'
 import AddDoctors from '../Doctors/AddDoctors'
 import { fetchBranchByBranchId } from './AddBranchAPI'
+import PackageManagement from '../PackageManagement/PackageManagement'
 
 const ClinicDetails = () => {
   const { hospitalId, branchId } = useParams()
@@ -55,7 +56,7 @@ const ClinicDetails = () => {
   const [activeTab, setActiveTab] = useState(0)
   const [modalVisible, setModalVisible] = useState(false)
   const [editDoctorModal, setEditDoctorModal] = useState(false)
-// Pagination
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(5)
   const indexOfLastItem = currentPage * itemsPerPage
@@ -313,11 +314,11 @@ const ClinicDetails = () => {
                   Additional Details
                 </CNavLink>
               </CNavItem>
-              <CNavItem>
+              {/* <CNavItem>
                 <CNavLink active={activeTab === 2} onClick={() => handleTabChange(2)}>
                   Doctors
                 </CNavLink>
-              </CNavItem>
+              </CNavItem> */}
 
               <CNavItem>
                 <CNavLink active={activeTab === 3} onClick={() => handleTabChange(3)}>
@@ -1296,8 +1297,7 @@ const ClinicDetails = () => {
                 </CForm>
               </CTabPane>
 
-
-              <CTabPane visible={activeTab === 2}>
+              {/* <CTabPane visible={activeTab === 2}>
                 <CCardHeader>
                   <div className="d-flex justify-content-between align-items-center mb-3 w-100">
                     <h4 className="mb-0 text-center flex-grow-1">Doctor Details</h4>
@@ -1317,8 +1317,6 @@ const ClinicDetails = () => {
                     </button>
                   </div>
                 </CCardHeader>
-
-                {/* Add Doctor Modal */}
                 {branchData?.clinicId ? (
                   <AddDoctors
                     modalVisible={modalVisible}
@@ -1329,7 +1327,6 @@ const ClinicDetails = () => {
                     fetchAllDoctors={() => fetchDoctorsForClinicAndBranch(branchData.clinicId, branchData.branchId)}
                   />
                 ) : (
-                  // If branchData missing, allow adding doctor with hospitalId fallback
                   <AddDoctors
                     modalVisible={modalVisible}
                     setModalVisible={setModalVisible}
@@ -1339,13 +1336,7 @@ const ClinicDetails = () => {
                     fetchAllDoctors={() => fetchDoctorsForClinicAndBranch(hospitalId, branchId)}
                   />
                 )}
-
-
-                {/* If branch not found, show a message but still show doctors if available */}
                 {branchNotFound && <p className="text-danger text-center mt-2">Branch not found</p>}
-
-
-                {/* Doctor Cards */}
                 {currentItems.length > 0 ? (
                   <div className="doctor-card-container">
                     {currentItems.map((doc) => (
@@ -1368,30 +1359,21 @@ const ClinicDetails = () => {
                 ) : (
                   <p className="text-center">No Doctors Available</p>
                 )}
-
-                {/* Pagination */}
                 <div className="d-flex justify-content-center mt-3">
                   <CPagination aria-label="Doctors navigation">
                     <CPaginationItem disabled={currentPage === 1} onClick={() => setCurrentPageSafe(Math.max(1, currentPage - 1))}>
                       Previous
                     </CPaginationItem>
-
-
                     {[...Array(totalPages)].map((_, i) => (
                       <CPaginationItem key={i} active={currentPage === i + 1} onClick={() => setCurrentPageSafe(i + 1)}>
                         {i + 1}
                       </CPaginationItem>
                     ))}
-
-
                     <CPaginationItem disabled={currentPage === totalPages} onClick={() => setCurrentPageSafe(Math.min(totalPages, currentPage + 1))}>
                       Next
                     </CPaginationItem>
                   </CPagination>
                 </div>
-
-
-                {/* Delete Doctor Modal */}
                 <CModal visible={showDeleteModal} onClose={() => setShowDeleteModal(false)} alignment="center">
                   <CModalHeader>
                     <CModalTitle>Delete Doctor</CModalTitle>
@@ -1417,7 +1399,7 @@ flex-direction: column;
 gap: 20px;
 }
 `}</style>
-              </CTabPane>
+              </CTabPane> */}
 
 
 
@@ -1426,10 +1408,12 @@ gap: 20px;
               </CTabPane>
               <CTabPane visible={activeTab === 4}>
 
-              </CTabPane>
-              <CTabPane visible={activeTab === 5}>
 
               </CTabPane>
+              <CTabPane visible={activeTab === 5}>
+                <PackageManagement clinicId={hospitalId} branchId={branchId} />
+              </CTabPane>
+
             </CTabContent>
 
             <CModal visible={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="custom-modal"

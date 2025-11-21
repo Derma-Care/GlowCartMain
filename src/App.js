@@ -54,7 +54,8 @@ const App = () => {
         />
         <Suspense fallback={<CSpinner color="primary" variant="grow" />}>
           <Routes>
-            <Route path="/" element={<Navigate to="/clinic-management" />} />
+            {/* <Route path="/" element={<Navigate to="/clinic-management" />} /> */}
+             <Route path="/" element={<Navigate to="/clinic-Registration" />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/404" element={<Page404 />} />

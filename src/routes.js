@@ -10,6 +10,7 @@ const ClinicManagement = React.lazy(() => import('./views/clinicManagement/Clini
 const procedureManagement = React.lazy(() => import('./views/ProcedureManagement/ProcedureManagement'),)
 const ClinicManagementDetails = React.lazy(() => import('./views/clinicManagement/ClinicDetails'))
 const AddClinic = React.lazy(() => import('./views/clinicManagement/AddClinic'))
+const ClinicRegistration = React.lazy(() => import('./views/clinicManagement/ClinicRegistration'))
 const categoryManagement = React.lazy(() => import('./views/categoryManagement/categoryManagement'))
 const customerManagement = React.lazy(() => import('./views/customerManagement/CustomerManagement'))
 const PatientManagement = React.lazy(() => import('./views/providerManagement/ProviderManagement'))
@@ -29,6 +30,7 @@ const routes = [
   { path: '/procedure-management', name: 'Procedure Management', element: procedureManagement },
   { path: '/clinic-Management', name: 'Clinic Management', element: ClinicManagement },
   { path: '/add-clinic', name: 'Add Clinic', element: AddClinic },
+    { path: '/clinic-Registration', name: 'Add Clinic Registration', element: ClinicRegistration},
   { path: '/doctor/:doctorId', name: 'Doctor Details', element: DoctorDetailsPage },
   { path: '/patients-management', name: 'Patient Management', element: PatientManagement },
   { path: '/clinic-Management/:hospitalId', name: 'Clinic Details', element: ClinicManagementDetails },

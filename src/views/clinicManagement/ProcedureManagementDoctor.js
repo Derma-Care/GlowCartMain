@@ -13,7 +13,6 @@ import {
   CModalBody,
   CModalFooter,
   CRow,
-
   CCol,
   CFormSelect,
   CCardBody,
@@ -23,8 +22,6 @@ import {
 import DataTable from 'react-data-table-component'
 import CIcon from '@coreui/icons-react'
 import { cilSearch } from '@coreui/icons'
-
-
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import {
@@ -37,15 +34,11 @@ import {
   GetSubServices_ByClinicId,
 } from './ProcedureManagementAPI'
 import {
-  // subService_URL,
   getservice,
-
   BASE_URL,
 } from '../../baseUrl'
 import ProcedureQA from './QASection'
 import { Edit2, Eye, Trash2, View } from 'lucide-react'
-import { ConfirmationModal } from '../../Utils/ConfirmationDelete'
-
 
 const ProcedureManagementDoctor = ({ clinicId }) => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -64,8 +57,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
   const [subServiceOptions, setSubServiceOptions] = useState([])
   const [selectedSubService, setSelectedSubService] = useState('')
   const [subServiceId, setSubServiceId] = useState('')
-
-
   const [serviceToEdit, setServiceToEdit] = useState({
     subServiceImage: '',
     viewImage: '',
@@ -73,7 +64,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     serviceName: '',
     subServiceImageFile: null,
   })
-
 
   let descriptionQA = []
   try {
@@ -100,11 +90,9 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     procedureQA: [],
     preProcedureQA: [],
     postProcedureQA: [],
+    sittings: 0,
   })
   const [modalMode, setModalMode] = useState('add') // or 'edit'
-  const [editingValue, setEditingValue] = useState('')
-
-
   // Open for adding
   const openAddModal = () => {
     setModalMode('add')
@@ -113,9 +101,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     setQuestion('')
     setSelectedSubService('')
     setNewService({
-
       categoryId: '',
-
       serviceId: '',
       subServiceId: '',
       subServiceName: '',
@@ -125,30 +111,25 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       consultationFee: 0,
       minTime: '',
       taxPercentage: 0,
-
       subServiceImage: '',
       subServiceImageFile: null,
       viewImage: '',
       viewDescription: '',
-
       platformFeePercentage: 0,
       descriptionQA: [],
+      sittings: 0,
     })
     setModalVisible(true)
   }
 
   // Open for editing
-
   const openEditModal = async (service) => {
-
     setSubServiceId(service.subServiceId)
     setModalMode('edit')
     setModalVisible(true)
-
     // 1. Set selected category
     const selectedCategory = category.find((cat) => cat.categoryName === service.categoryName)
     const categoryId = selectedCategory?.categoryId || ''
-
     // 2. Fetch services under this category
     let fetchedServiceOptions = []
     try {
@@ -159,10 +140,8 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     } catch (err) {
       console.error('Error fetching service list:', err)
     }
-
     const selectedService = fetchedServiceOptions.find((s) => s.serviceName === service.serviceName)
     const serviceId = selectedService?.serviceId || ''
-
     // 3. Fetch subservices
     let subServiceList = []
     if (serviceId) {
@@ -178,17 +157,13 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         console.error('Error fetching subservices:', err)
       }
     }
-
     setSubServiceOptions({ subServices: subServiceList })
-
     // Get valid subServiceId and name
     const selectedSubServiceObj = subServiceList.find(
       (s) => s.subServiceName === service.subServiceName,
     )
-
     const resolvedSubServiceId = selectedSubServiceObj?.subServiceId || ''
     const resolvedSubServiceName = selectedSubServiceObj?.subServiceName || ''
-
     setSelectedSubService(resolvedSubServiceId)
     const procedureQA = Array.isArray(service.procedureQA)
       ? service.procedureQA
@@ -199,10 +174,8 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     const postProcedureQA = Array.isArray(service.postProcedureQA)
       ? service.postProcedureQA
       : JSON.parse(service.postProcedureQA || '[]')
-
     const rawImage = service.subServiceImage || ''
     const fullImage = rawImage.startsWith('data:') ? rawImage : `data:image/jpeg;base64,${rawImage}`
-
     // Prefill all fields
     setNewService({
       subServiceId: resolvedSubServiceId,
@@ -214,51 +187,37 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       taxPercentage: service.taxPercentage || 0,
       minTime: service.minTime || '',
       subServiceImage: rawImage,
-
       subServiceImageFile: null,
-
       viewDescription: service.viewDescription || '',
-
-
       platformFeePercentage: service.platformFeePercentage || 0,
-      // descriptionQA: formattedQA,
       viewImage: service.viewImage || '',
       procedureQA: procedureQA,
       preProcedureQA: preProcedureQA,
       postProcedureQA: postProcedureQA,
+      sittings: service.sittings || 0, // ✅ default to 0
     })
     setQaList(formattedQA)
   }
-
-
-
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [serviceIdToDelete, setServiceIdToDelete] = useState(null)
   const [errors, setErrors] = useState({
     subServiceName: '',
-
     serviceId: '',
-
     price: '',
-
     taxPercentage: '',
     descriptionQA: '',
     answers: '',
     minTime: '',
     discount: '',
     viewDescription: '',
-
     subServiceImage: '',
     bannerImage: '',
+    sittings: '', // ✅ added for validation
   })
-
-  const [editErrors, setEditErrors] = useState({})
-
   const fetchData = async () => {
     // console.log('fetch dataaaaaaa', service.subServiceId)
     setLoading(true)
     setError(null)
-
     try {
       const categoryResponse = await CategoryData()
       if (categoryResponse.data && Array.isArray(categoryResponse.data)) {
@@ -270,7 +229,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       } else {
         throw new Error('Invalid category data format')
       }
-
       // const hospitalId = localStorage.getItem('HospitalId') // ✅ current hospital
       if (clinicId) {
         // console.log("clinic ID SUb ", subServiceId)
@@ -327,13 +285,10 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         setFilteredData([])
         return
       }
-
       const filtered = service.filter((item) => {
         const subServiceNameMatch = item.subServiceName?.toLowerCase().startsWith(trimmedQuery)
         const serviceNameMatch = item.serviceName?.toLowerCase().startsWith(trimmedQuery)
         const categoryNameMatch = item.categoryName?.toLowerCase().startsWith(trimmedQuery)
-        // const priceMatch = item.price?.toLowerCase().startsWith(trimmedQuery)
-
         return subServiceNameMatch || serviceNameMatch || categoryNameMatch
       })
 
@@ -342,7 +297,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
     handleSearch()
   }, [searchQuery, service])
-
 
   const columns = [
     {
@@ -362,7 +316,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       ),
     },
     {
-      name: "Price",
+      name: "Procedure Price",
       selector: (row) => `₹${row.price || "0"}`,
       width: "20%", // ✅ responsive width
       cell: (row) => (
@@ -390,26 +344,20 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       ),
     },
   ];
-
-
   const minTimeValue = parseFloat(newService.minTime)
   const validateForm = () => {
     const newErrors = {}
 
-
     if (!newService.subServiceName) {
       newErrors.subServiceName = 'Procedure Name is required'
     }
-
     if (!newService.price) {
-      newErrors.price = 'price is required.'
+      newErrors.price = 'Price is required.'
     } else if (isNaN(newService.price)) {
-      newErrors.price = 'price must be a valid number.'
+      newErrors.price = 'Price must be a valid number.'
     } else if (parseFloat(newService.price) < 0) {
-      newErrors.price = 'price cannot be a negative number.'
+      newErrors.price = 'Price cannot be a negative number.'
     }
-
-
     if (newService.gst === '' || isNaN(newService.gst) || parseFloat(newService.gst) < 0) {
       newErrors.gst = 'GST must be a valid number and not negative.'
     }
@@ -420,39 +368,41 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     ) {
       newErrors.consultationFee = 'Consultation fee must be a valid number and not negative.'
     }
-
     if (!newService.discount && newService.discount !== 0) {
       newErrors.discount = 'Discount is required.'
     } else if (parseFloat(newService.discount) < 0) {
       newErrors.discount = 'Discount cannot be a negative number.'
     }
-
     if (!newService.minTimeValue || isNaN(newService.minTimeValue)) {
       newErrors.minTime = 'Minimum time is required'
     } else if (parseFloat(newService.minTimeValue) <= 0) {
       newErrors.minTime = 'Minimum time must be greater than zero.'
     }
-
     if (!newService.viewDescription) {
-      newErrors.viewDescription = 'View description is Required.'
+      newErrors.viewDescription = 'View description is required.'
     }
-
-
     if (!newService.subServiceImage) {
-      console.log('Service Image in Form:', newService.serviceImage)
       newErrors.subServiceImage = 'Please upload a service image.'
     }
-
     if (!newService.categoryId) {
       newErrors.categoryId = 'Please select a valid category.'
+    }
+
+    // ✅ Validation for sittings
+    if (newService.sittings === '' || newService.sittings === null || isNaN(newService.sittings)) {
+      newErrors.sittings = 'Sittings must be a number.'
+    } else if (parseInt(newService.sittings) < 0) {
+      newErrors.sittings = 'Sittings cannot be negative.'
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
+
   const handleAddService = async () => {
     const isValid = validateForm(); // ✅ Call it here
+    if (!isValid) return; // Stop if validation fails
 
     console.log('--- handleAddService START ---')
 
@@ -479,7 +429,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       hospitalId: clinicId,
       subServiceName: newService.subServiceName,
       subServiceId: newService.subServiceId,
-
       price: newService.price,
       discountPercentage: newService.discount,
       discountAmount,
@@ -492,16 +441,13 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       finalCost,
       gst: newService.gst,
       consultationFee: newService.consultationFee,
-
       minTime: formattedMinTime,
-
       subServiceImage: newService.subServiceImage,
-
       procedureQA: newService.procedureQA,
       preProcedureQA: newService.preProcedureQA,
       postProcedureQA: newService.postProcedureQA,
       viewDescription: newService.viewDescription,
-
+      sittings: newService.sittings || 0, // ✅ Default to 0 if not set
     }
 
     console.log('Payload ready to submit:', payload)
@@ -520,6 +466,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       toast.error(error.response?.data?.message, { position: 'top-right' })
     }
 
+    // Reset form
     setNewService({
       hospitalId: '',
       subServiceId: '',
@@ -529,18 +476,17 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       gst: 0,
       consultationFee: 0,
       taxPercentage: 0,
-      minTimeValue,
+      minTimeValue: '',
       minTimeUnit: '',
-
       subServiceImage: '',
       subServiceImageFile: '',
       viewDescription: '',
-
       procedureQA: [],
       preProcedureQA: [],
       postProcedureQA: [],
       platformFeePercentage: 0,
       descriptionQA: [],
+      sittings: 0, // ✅ Default reset
     })
 
     setQaList([])
@@ -549,14 +495,10 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
   const formatMinutes = (minTime) => {
     const minutes = parseInt(minTime, 10)
-
     if (isNaN(minutes)) return 'Invalid time'
-
     if (minutes < 60) return `${minutes} min`
-
     const hours = Math.floor(minutes / 60)
     const remainingMins = minutes % 60
-
     return remainingMins === 0
       ? `${hours} hour${hours > 1 ? 's' : ''}`
       : `${hours} hour${hours > 1 ? 's' : ''} ${remainingMins} min`
@@ -565,7 +507,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
   const handleUpdateService = async () => {
     try {
       let base64ImageToSend = ''
-
       if (newService.serviceImageFile) {
         const fullBase64String = await toBase64(newService.serviceImageFile)
         base64ImageToSend = fullBase64String.split(',')[1]
@@ -575,10 +516,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         base64ImageToSend = newService.subServiceImage || ''
       }
 
-      // Ensure numeric values are numbers, not empty strings or null
-      const price = newService.price > 0 ? Number(newService.price) : 0
-
-      // build only the expected payload (no extra keys)
       const updatedService = {
         clinicId,
         subServiceName: newService.subServiceName || '',
@@ -586,12 +523,9 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         minTime: newService.minTimeValue
           ? `${newService.minTimeValue} ${newService.minTimeUnit}`
           : '',
-
         procedureQA: Array.isArray(newService.procedureQA) ? newService.procedureQA : [],
         preProcedureQA: Array.isArray(newService.preProcedureQA) ? newService.preProcedureQA : [],
-        postProcedureQA: Array.isArray(newService.postProcedureQA)
-          ? newService.postProcedureQA
-          : [],
+        postProcedureQA: Array.isArray(newService.postProcedureQA) ? newService.postProcedureQA : [],
         price: newService.price || 0,
         discountPercentage: newService.discount || 0,
         taxPercentage: newService.taxPercentage || 0,
@@ -599,13 +533,11 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         subServiceImage: base64ImageToSend,
         gst: newService.gst || 0,
         consultationFee: newService.consultationFee || 0,
-        // ProcedureQA:newService.ProcedureQA
+        sittings: newService.sittings || 0, // ✅ Default to 0 if not set
       }
 
-      // Log the payload to verify it before sending
       console.log('Payload for updateSubServiceData:', updatedService)
 
-      // send cleaned payload
       const response = await updateServiceData(subServiceId, clinicId, updatedService)
 
       toast.success('Procedure updated successfully!', { position: 'top-right' })
@@ -649,10 +581,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
     setIsModalVisible(false)
   }
 
-  const handleCancelDelete = () => {
-    setIsModalVisible(false)
-    console.log('Service deletion canceled')
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -675,7 +603,8 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         name === 'price' ||
         name === 'discount' ||
         name === 'taxPercentage' ||
-        name === 'minTime'
+        name === 'minTime' ||
+        name === 'sittings'
       ) {
         return {
           ...prev,
@@ -695,7 +624,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       [name]: '',
     }))
   }
-
   const AddCancel = () => {
     setNewService({
       price: '',
@@ -707,19 +635,16 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
       subServiceImage: '',
       viewImage: '',
       viewDescription: '',
-
+      sittings: 0,
       categoryId: '',
     })
     setModalVisible(false)
-
     setErrors({})
   }
-
 
   return (
     <div style={{ overflow: 'hidden' }}>
       <ToastContainer />
-
       <div>
         <CForm className="d-flex justify-content-end mb-3">
           <CInputGroup className="mb-3" style={{ marginRight: '20px', width: '400px' }}>
@@ -745,7 +670,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
           </CButton>
         </CForm>
       </div>
-
       {viewService && (
         <CModal
           visible={!!viewService}
@@ -772,12 +696,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   </CCol>
                   <CCol sm={6}>
                     <strong>Procedure ID:</strong> {viewService.subServiceId}
-
                   </CCol>
-
-
-
-
                 </CRow>
               </CCardBody>
             </CCard>
@@ -787,7 +706,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
               <CCardBody>
                 <h6 className="text-info fw-semibold mb-3">Pricing & Fees</h6>
                 <CRow className="gy-3">
-                  <CCol sm={4}><strong>Price:</strong> ₹ {viewService.price ? Math.round(viewService.price) : '—'}</CCol>
+                  <CCol sm={4}><strong>Procedure Price:</strong> ₹ {viewService.price ? Math.round(viewService.price) : '—'}</CCol>
                   <CCol sm={4}><strong>Discount %:</strong> {viewService.discountPercentage ? Math.round(viewService.discountPercentage) + '%' : '—'}</CCol>
                   <CCol sm={4}><strong>Discount Amount:</strong> ₹ {viewService.discountAmount ? Math.round(viewService.discountAmount) : '—'}</CCol>
                   <CCol sm={4}><strong>Discounted Cost:</strong> ₹ {viewService.discountedCost ? Math.round(viewService.discountedCost) : '—'}</CCol>
@@ -800,11 +719,10 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   <CCol sm={4}><strong>Consultation Fee:</strong> ₹ {viewService.consultationFee ?? '—'}</CCol>
                   <CCol sm={4}><strong>Final Cost:</strong> ₹ {viewService.finalCost ? Math.round(viewService.finalCost) : '—'}</CCol>
                   <CCol sm={4}><strong>Service Time:</strong> {viewService.minTime ? formatMinutes(viewService.minTime) : '—'}</CCol>
+                  <CCol sm={4}><strong>Sittings:</strong> {viewService.sittings ?? 0}</CCol>
                 </CRow>
               </CCardBody>
             </CCard>
-
-
             {/* Q&A Sections */}
             {["preProcedureQA", "procedureQA", "postProcedureQA"].map((qaType, i) => {
               const titles = {
@@ -877,8 +795,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
           </CModalFooter>
         </CModal>
       )}
-
-
       <CModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -893,8 +809,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
         <CModalBody>
           <CForm>
             <CRow className="mb-4">
-
-              <CCol md={4}>
+              <CCol md={6}>
                 <h6>
                   Procedure Name <span className="text-danger">*</span>
                 </h6>
@@ -933,7 +848,7 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   <CFormText className="text-danger">{errors.subServiceName}</CFormText>
                 )}
               </CCol>
-              <CCol md={4}>
+              <CCol md={6}>
                 <h6>
                   Procedure Image <span className="text-danger">*</span>
                 </h6>
@@ -956,7 +871,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                     }
                   }}
                 />
-
                 {newService?.subServiceImage && (
                   <img
                     src={
@@ -969,7 +883,24 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   />
                 )}
               </CCol>
-              <CCol md={4}>
+              <CCol md={6}>
+                <h6>
+                  Sittings <span className="text-danger">*</span>
+                </h6>
+                <CFormInput
+                  type="number"
+                  min={1}
+                  placeholder="Enter number of sittings"
+                  value={newService.sittings || 0}
+                  name="sittings"
+                  onChange={handleChange}
+                />
+                {errors.sittings && (
+                  <CFormText className="text-danger">{errors.sittings}</CFormText>
+                )}
+              </CCol>
+
+              <CCol md={6}>
                 <h6>
                   View Description <span className="text-danger">*</span>
                 </h6>
@@ -986,7 +917,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                 )}
               </CCol>
             </CRow>
-
             <CRow className="mb-4">
               <CCol md={3}>
                 <h6>
@@ -1049,12 +979,8 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
                   <CFormText className="text-danger">{errors.taxPercentage}</CFormText>
                 )}
               </CCol>
-
-
             </CRow>
-
             <h6 className="m-3">Procedure (Optional)</h6>
-
             <ProcedureQA
               preQAList={newService.preProcedureQA}
               setPreQAList={(data) => setNewService((prev) => ({ ...prev, preProcedureQA: data }))}
@@ -1082,7 +1008,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
           </CButton>
         </CModalFooter>
       </CModal>
-
       {loading ? (
         <div
           style={{
@@ -1171,12 +1096,6 @@ const ProcedureManagementDoctor = ({ clinicId }) => {
 
         </div>
       )}
-
-
-
-
-
-
     </div>
   )
 }

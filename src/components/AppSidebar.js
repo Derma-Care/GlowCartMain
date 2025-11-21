@@ -1,16 +1,14 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import Logo from './header/GlowKaart.png'
 
 import {
-  CCloseButton,
   CSidebar,
-  CSidebarBrand,
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav'
 import './sidebar.css'
@@ -23,11 +21,15 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const location = useLocation() // get current path
+
+  // Hide sidebar only on /clinicRegistration
+  if (location.pathname === '/clinic-Registration') return null
 
   return (
     <CSidebar
       className="border-end"
-     style={{ background: 'var(--color-bgcolor)' }}
+      style={{ background: 'var(--color-bgcolor)' }}
       color={COLORS.teal}
       position="fixed"
       unfoldable={unfoldable}
@@ -62,13 +64,10 @@ const AppSidebar = () => {
             </h1>
           </div>
         </div>
-        {/* <CCloseButton
-          className="d-lg-none"
-          dark
-          onClick={() => dispatch({ type: 'set', sidebarShow: false })}
-        /> */}
       </CSidebarHeader>
+
       <AppSidebarNav items={navigation} />
+
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })} />
       </CSidebarFooter>

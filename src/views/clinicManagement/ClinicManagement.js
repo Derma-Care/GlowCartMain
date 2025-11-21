@@ -38,11 +38,8 @@ const ClinicManagement = ({ service, onBack }) => {
   const [itemsPerPage, setItemsPerPage] = useState(5)
 
   const handleAddClinic = () => {
-    navigate('/add-clinic', {
-      state: {
-        categoryName: service?.categoryName,
-        categoryId: service?.id,
-      },
+    navigate('/clinic-Registration', {
+      
     })
   }
 
