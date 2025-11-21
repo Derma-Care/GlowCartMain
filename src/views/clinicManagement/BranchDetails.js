@@ -38,7 +38,7 @@ import AddDoctors from '../Doctors/AddDoctors'
 import DoctorCard from '../Doctors/DoctorCard'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import EmployeeManagement from '../EmployeeManagement/EmployeeManagement'
+
 
 
 const BranchDetails = () => {
@@ -513,9 +513,7 @@ const BranchDetails = () => {
 
           </CTabPane>
         
-          <CTabPane visible={activeTab === 2}>
-            <EmployeeManagement branchId={branchId} clinicId={branchData?.clinicId} />
-          </CTabPane>
+         
         </CTabContent>
       </CCardBody>
     </CCard>
