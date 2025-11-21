@@ -215,7 +215,17 @@ export const getSubService='admin/getSubService'
 
 
 // GlowKart API's
-export const BASE_URLApi = "http://35.154.152.61:8080/admin";
-export const CLINIC_REGISTRATION_URL  = `${BASE_URLApi}/clinics/register`;
+export const BASE_URL_API = "http://35.154.152.61:8080/admin";
+
+// Clinic
+export const CLINIC_REGISTRATION_URL = `${BASE_URL_API}/clinics/register`;
+
+// Procedure Endpoints
+export const PROCEDURE_CREATE_URL = `${BASE_URL_API}/procedures/create`;
+export const PROCEDURE_GET_ALL_URL = `${BASE_URL_API}/procedures/all`;
+export const PROCEDURE_GET_BY_ID_URL = (id) => `${BASE_URL_API}/procedures/get/${id}`;
+export const PROCEDURE_UPDATE_URL = (id) => `${BASE_URL_API}/procedures/update/${id}`;
+export const PROCEDURE_DELETE_URL = (id) => `${BASE_URL_API}/procedures/delete/${id}`;
+
 
 

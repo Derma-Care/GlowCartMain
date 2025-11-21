@@ -17,7 +17,12 @@ import {
   addSubservices, 
   deleteSubservices,
   getSubService,
-  getSubServiceBySubServiceId
+  getSubServiceBySubServiceId,
+  PROCEDURE_CREATE_URL,
+  PROCEDURE_GET_ALL_URL,
+  PROCEDURE_GET_BY_ID_URL,
+  PROCEDURE_UPDATE_URL,
+  PROCEDURE_DELETE_URL
 } from '../../baseUrl'
 import { toast } from 'react-toastify'
 // export default postSubService
@@ -45,42 +50,6 @@ export const getAllSubServices = async () => {
     return []
   }
 }
-// export const deleteSubServiceData = async (subserviceID) => {
-//   console.log(subserviceID)
-//   try {
-//     const response = await axios.delete(`${BASE_URL}/${deleteSubservices}/${subserviceID}`, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     })
-
-//     console.log('Category deleted successfully:', response.data)
-//     return response
-//   } catch (error) {
-//     console.error('Error deleting category:', error.response ? error.response.data : error)
-//     throw error
-//   }
-// }
-// export const GetSubServices_ByClinicId = async (hospitalId) => {
-//   try {
-//     const response = await axios.get(`${BASE_URL}/${getService_ByClinicId}/${hospitalId}`)
-//     return response.data?.data
-//   } catch (error) {
-//     console.error('Error fetching sub-service data:', error)
-//     return null
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
 
 export const subServiceData = async (serviceId) => {
   console.log('Serviceid response:', serviceId)
@@ -264,20 +233,66 @@ export const getSubServiceId = async (subServiceId) => {
   }
 }
 
-// export const getServiceById = async (categoryId) => {
-//   console.log("📡 Fetching Service by Category ID:", categoryId)
-//   try {
-//     const response = await axios.get(`${BASE_URL}/${getService}/${categoryId}`)
 
-//     console.log("✅ Service response:", response.data)
-//     return response.data
-//   } catch (error) {
-//     if (error.response && error.response.status === 404) {
-//       console.log("⚠️ Service response (404):", error.response.data)
-//       return error.response.data
-//     } else {
-//       console.error("❌ Unexpected error:", error.message || error)
-//       throw error
-//     }
-//   }
-// }
+
+
+/* ====================================================
+    ✅ PROCEDURE APIs (NEWLY ADDED)
+==================================================== */
+
+// CREATE PROCEDURE
+export const createProcedure = async (payload) => {
+  try {
+    const res = await axios.post(`${PROCEDURE_CREATE_URL}`, payload);
+    return res.data;
+  } catch (error) {
+    console.error("Create Procedure Error:", error.response?.data);
+    throw error;
+  }
+};
+
+// GET ALL PROCEDURES
+export const getAllProcedures = async () => {
+  try {
+    const res = await axios.get(`${PROCEDURE_GET_ALL_URL}`);
+    return res.data?.data || [];
+  } catch (error) {
+    console.error("Get Procedures Error:", error);
+    return [];
+  }
+};
+
+// GET PROCEDURE BY ID
+export const getProcedureById = async (id) => {
+  try {
+    const res = await axios.get(PROCEDURE_GET_BY_ID_URL(id));
+    return res.data?.data;
+  } catch (error) {
+    console.error("Get Procedure by ID Error:", error);
+    return null;
+  }
+};
+
+// UPDATE PROCEDURE
+export const updateProcedure = async (id, payload) => {
+  try {
+    const res = await axios.put(PROCEDURE_UPDATE_URL(id), payload);
+    return res.data;
+  } catch (error) {
+    console.error("Update Procedure Error:", error.response?.data);
+    throw error;
+  }
+};
+
+
+// DELETE PROCEDURE
+export const deleteProcedure = async (id) => {
+  try {
+    const res = await axios.delete(PROCEDURE_DELETE_URL(id));
+    return res.data;
+  } catch (error) {
+    console.error("Delete Procedure Error:", error);
+    throw error;
+  }
+};
+

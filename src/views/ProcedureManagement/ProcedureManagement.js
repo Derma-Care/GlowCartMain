@@ -19,131 +19,149 @@ import {
   CCard,
   CCardHeader,
 } from '@coreui/react'
+
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { postSubService, getAllSubServices, deleteSubServiceData } from './ProcedureAPI'
+
+/* ✅ USE PROCEDURE APIs */
+import {
+  createProcedure,
+  getAllProcedures,
+  updateProcedure,
+  deleteProcedure,
+} from './ProcedureAPI'
+
 import LoadingIndicator from '../../Utils/loader'
 import { ConfirmationModal } from '../../Utils/ConfirmationDelete'
 import { Edit2, Eye, Trash2 } from 'lucide-react'
 import { COLORS } from '../../Constant/Themes'
 
 const ProcedureManagement = () => {
-  const [subServices, setSubServices] = useState([])
-  const [subServiceInput, setSubServiceInput] = useState('')
+  const [procedures, setProcedures] = useState([])
+  const [procedureInput, setProcedureInput] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [viewModal, setViewModal] = useState(false)
   const [selectedProcedure, setSelectedProcedure] = useState(null)
   const [editMode, setEditMode] = useState(false)
-  const [editSubServiceId, setEditSubServiceId] = useState(null)
+  const [editProcedureId, setEditProcedureId] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deleteServiceId, setDeleteServiceId] = useState(null)
-  const [errors, setErrors] = useState({ subService: '' })
+  const [deleteId, setDeleteId] = useState(null)
+  const [errors, setErrors] = useState({ procedure: '' })
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
 
   useEffect(() => {
-    fetchSubServices()
+    fetchProcedures()
   }, [])
 
-  const fetchSubServices = async () => {
+  /* ======================================================
+      GET ALL PROCEDURES
+  ====================================================== */
+  const fetchProcedures = async () => {
     setLoading(true)
     try {
-      const result = await getAllSubServices()
+      const response = await getAllProcedures()
 
-      const formatted = result.flatMap((category) =>
-        Array.isArray(category.subServices)
-          ? category.subServices.map((sub) => ({
-            id: sub.subServiceId,
-            name: sub.subServiceName,
-          }))
-          : []
-      )
+      const formatted = response.map((proc) => ({
+        id: proc.procedureId,
+        name: proc.procedureName,
+      }))
 
-      setSubServices(formatted)
-    } catch (err) {
-      setError('Failed to fetch procedures')
-      console.error(err)
+      setProcedures(formatted)
+    } catch (error) {
+      toast.error('Failed to fetch procedures')
     }
     setLoading(false)
   }
 
+  /* ======================================================
+      ADD / UPDATE PROCEDURE
+  ====================================================== */
   const handleSubmit = async () => {
-    const trimmedInput = subServiceInput.trim()
-    if (!trimmedInput) {
-      setErrors({ subService: 'Procedure name is required' })
+    const trimmed = procedureInput.trim()
+    if (!trimmed) {
+      setErrors({ procedure: 'Procedure name is required' })
       return
     }
 
-    const duplicate = subServices.some(
-      (s) => s.name.toLowerCase() === trimmedInput.toLowerCase() && s.id !== editSubServiceId
+    const duplicate = procedures.some(
+      (p) => p.name.toLowerCase() === trimmed.toLowerCase() && p.id !== editProcedureId
     )
     if (duplicate) {
-      setErrors({ subService: 'Procedure already exists' })
+      setErrors({ procedure: 'Procedure already exists' })
       return
     }
 
     try {
-      const payload = { subServices: [{ subServiceName: trimmedInput }] }
+      const payload = { procedureName: trimmed }
 
-      const res = editMode
-        ? await postSubService(payload, editSubServiceId)
-        : await postSubService(payload)
-
-      if (res?.data?.success) {
-        toast.success(editMode ? 'Procedure updated successfully' : 'Procedure added successfully')
-        fetchSubServices()
-        setSubServiceInput('')
-        setErrors({ subService: '' })
-        setEditMode(false)
-        setEditSubServiceId(null)
-        setShowModal(false)
+      let res
+      if (editMode) {
+        res = await updateProcedure(editProcedureId, payload)
+        toast.success('Procedure updated successfully')
       } else {
-        toast.error(res?.data?.message || 'Failed to save procedure')
+        res = await createProcedure(payload)
+        toast.success('Procedure added successfully')
       }
-    } catch (err) {
-      console.error(err)
+
+      fetchProcedures()
+      setProcedureInput('')
+      setErrors({ procedure: '' })
+      setEditMode(false)
+      setEditProcedureId(null)
+      setShowModal(false)
+    } catch (error) {
       toast.error('Failed to save procedure')
     }
   }
 
-  const handleEdit = (procedure) => {
-    setEditMode(true)
-    setEditSubServiceId(procedure.id)
-    setSubServiceInput(procedure.name)
-    setShowModal(true)
-  }
-
+  /* ======================================================
+      VIEW PROCEDURE
+  ====================================================== */
   const handleView = (procedure) => {
     setSelectedProcedure(procedure)
     setViewModal(true)
   }
 
+  /* ======================================================
+      EDIT PROCEDURE
+  ====================================================== */
+  const handleEdit = (procedure) => {
+    setEditMode(true)
+    setEditProcedureId(procedure.id)
+    setProcedureInput(procedure.name)
+    setShowModal(true)
+  }
+
+  /* ======================================================
+      DELETE PROCEDURE
+  ====================================================== */
   const confirmDelete = (id) => {
-    setDeleteServiceId(id)
+    setDeleteId(id)
     setShowDeleteModal(true)
   }
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteSubServiceData(deleteServiceId)
+      await deleteProcedure(deleteId)
       toast.success('Procedure deleted successfully')
-      fetchSubServices()
-    } catch (err) {
+      fetchProcedures()
+    } catch {
       toast.error('Failed to delete procedure')
     }
     setShowDeleteModal(false)
-    setDeleteServiceId(null)
   }
 
-  // Pagination
+  /* ======================================================
+      PAGINATION
+  ====================================================== */
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = subServices.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(subServices.length / itemsPerPage)
+  const currentItems = procedures.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(procedures.length / itemsPerPage)
 
   return (
     <>
@@ -152,16 +170,16 @@ const ProcedureManagement = () => {
       <CCard className="mt-4">
         <CCardHeader>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="mb-0" style={{ color: COLORS.black}}>
+            <h4 className="mb-0" style={{ color: COLORS.black }}>
               Procedure Management
             </h4>
 
             <CButton
               color="secondary"
-              style={{ backgroundColor: 'var(--color-black)', color: COLORS.white }}
+              style={{ backgroundColor: COLORS.black, color: COLORS.white }}
               onClick={() => {
                 setEditMode(false)
-                setSubServiceInput('')
+                setProcedureInput('')
                 setShowModal(true)
               }}
             >
@@ -172,11 +190,9 @@ const ProcedureManagement = () => {
 
         {loading ? (
           <LoadingIndicator message="Fetching Procedure Details, Please wait..." />
-        ) : error ? (
-          <div>{error}</div>
         ) : (
           <CTable striped hover responsive>
-            <CTableHead className="pink-table">
+            <CTableHead>
               <CTableRow>
                 <CTableHeaderCell>S.No</CTableHeaderCell>
                 <CTableHeaderCell>Procedure</CTableHeaderCell>
@@ -184,28 +200,23 @@ const ProcedureManagement = () => {
               </CTableRow>
             </CTableHead>
 
-            <CTableBody className="pink-table">
+            <CTableBody>
               {currentItems.length > 0 ? (
                 currentItems.map((row, index) => (
                   <CTableRow key={row.id}>
                     <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
                     <CTableDataCell>{row.name}</CTableDataCell>
-
                     <CTableDataCell className="text-center">
-                      <div className="d-flex justify-content-center align-items-center gap-2">
-                        <button className="actionBtn" onClick={() => handleView(row)} title="View">
+                      <div className="d-flex justify-content-center gap-2">
+                        <button className="actionBtn" onClick={() => handleView(row)}>
                           <Eye size={18} />
                         </button>
 
-                        <button className="actionBtn" onClick={() => handleEdit(row)} title="Edit">
+                        <button className="actionBtn" onClick={() => handleEdit(row)}>
                           <Edit2 size={18} />
                         </button>
 
-                        <button
-                          className="actionBtn"
-                          onClick={() => confirmDelete(row.id)}
-                          title="Delete"
-                        >
+                        <button className="actionBtn" onClick={() => confirmDelete(row.id)}>
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -215,7 +226,7 @@ const ProcedureManagement = () => {
               ) : (
                 <CTableRow>
                   <CTableDataCell colSpan={3} className="text-center">
-                    No records found
+                    No procedures found
                   </CTableDataCell>
                 </CTableRow>
               )}
@@ -224,8 +235,8 @@ const ProcedureManagement = () => {
         )}
 
         {/* Pagination */}
-        {subServices.length > 0 && (
-          <div className="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
+        {procedures.length > 0 && (
+          <div className="d-flex justify-content-between px-3 pb-3 mt-3">
             <div>
               <label className="me-2">Rows per page:</label>
               <CFormSelect
@@ -234,7 +245,7 @@ const ProcedureManagement = () => {
                   setItemsPerPage(Number(e.target.value))
                   setCurrentPage(1)
                 }}
-                style={{ width: '80px', display: 'inline-block' }}
+                style={{ width: '80px' }}
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -244,22 +255,22 @@ const ProcedureManagement = () => {
 
             <div>
               <div>
-                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, subServices.length)} of{' '}
-                {subServices.length} entries
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, procedures.length)} of{' '}
+                {procedures.length} entries
               </div>
 
               <CPagination align="end">
                 <CPaginationItem
                   disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() => setCurrentPage(currentPage - 1)}
                 >
                   Previous
                 </CPaginationItem>
 
                 {[...Array(totalPages)].map((_, i) => (
                   <CPaginationItem
-                    key={i + 1}
                     active={i + 1 === currentPage}
+                    key={i}
                     onClick={() => setCurrentPage(i + 1)}
                   >
                     {i + 1}
@@ -268,7 +279,7 @@ const ProcedureManagement = () => {
 
                 <CPaginationItem
                   disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() => setCurrentPage(currentPage + 1)}
                 >
                   Next
                 </CPaginationItem>
@@ -276,58 +287,58 @@ const ProcedureManagement = () => {
             </div>
           </div>
         )}
-
-        {/* Add/Edit Modal */}
-        <CModal visible={showModal} onClose={() => setShowModal(false)}>
-          <CModalHeader closeButton>
-            <CModalTitle>{editMode ? 'Edit Procedure' : 'Add New Procedure'}</CModalTitle>
-          </CModalHeader>
-          <CModalBody>
-            <CFormInput
-              placeholder="Enter Procedure"
-              value={subServiceInput}
-              onChange={(e) => {
-                setSubServiceInput(e.target.value)
-                if (e.target.value.trim()) setErrors({ subService: '' })
-              }}
-              invalid={!!errors.subService}
-            />
-            {errors.subService && <div className="text-danger mt-1">{errors.subService}</div>}
-          </CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={() => setShowModal(false)}>
-              Cancel
-            </CButton>
-            <CButton color="primary" onClick={handleSubmit}>
-              {editMode ? 'Update' : 'Add'}
-            </CButton>
-          </CModalFooter>
-        </CModal>
-
-        {/* View Modal */}
-        <CModal visible={viewModal} onClose={() => setViewModal(false)}>
-          <CModalHeader closeButton>
-            <CModalTitle>Procedure Details</CModalTitle>
-          </CModalHeader>
-          <CModalBody>
-            <p><strong>Procedure ID:</strong> {selectedProcedure?.id}</p>
-            <p><strong>Procedure Name:</strong> {selectedProcedure?.name}</p>
-          </CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={() => setViewModal(false)}>Close</CButton>
-          </CModalFooter>
-        </CModal>
-
-        {/* Delete Confirmation */}
-        {showDeleteModal && (
-          <ConfirmationModal
-            isVisible={showDeleteModal}
-            message="Are you sure you want to delete this procedure?"
-            onConfirm={handleConfirmDelete}
-            onCancel={() => setShowDeleteModal(false)}
-          />
-        )}
       </CCard>
+
+      {/* Add/Edit Modal */}
+      <CModal visible={showModal} onClose={() => setShowModal(false)}>
+        <CModalHeader closeButton>
+          <CModalTitle>{editMode ? 'Edit Procedure' : 'Add New Procedure'}</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CFormInput
+            placeholder="Enter Procedure Name"
+            value={procedureInput}
+            onChange={(e) => {
+              setProcedureInput(e.target.value)
+              if (e.target.value.trim()) setErrors({ procedure: '' })
+            }}
+            invalid={!!errors.procedure}
+          />
+          {errors.procedure && <p className="text-danger mt-1">{errors.procedure}</p>}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </CButton>
+          <CButton color="primary" onClick={handleSubmit}>
+            {editMode ? 'Update' : 'Add'}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* View Modal */}
+      <CModal visible={viewModal} onClose={() => setViewModal(false)}>
+        <CModalHeader closeButton>
+          <CModalTitle>Procedure Details</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <p><strong>ID:</strong> {selectedProcedure?.id}</p>
+          <p><strong>Name:</strong> {selectedProcedure?.name}</p>
+        </CModalBody>
+        <CModalFooter>
+          <CButton onClick={() => setViewModal(false)}>Close</CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Delete Confirmation */}
+      {showDeleteModal && (
+        <ConfirmationModal
+          isVisible={showDeleteModal}
+          message="Are you sure you want to delete this procedure?"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
     </>
   )
 }
