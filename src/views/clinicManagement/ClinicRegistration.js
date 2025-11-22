@@ -58,7 +58,7 @@ const ClinicRegistration = () => {
   const [selectedOption, setSelectedOption] = useState('')
   const [selectedPharmacistOption, setSelectedPharmacistOption] = useState('')
   const [clinicTypeOption, setClinicTypeOption] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const [timings, setTimings] = useState([])
   const [loadingTimings, setLoadingTimings] = useState(false)
   const [nabhQuestions, setNabhQuestions] = useState([]);
@@ -68,7 +68,7 @@ const ClinicRegistration = () => {
   const [nabhSubmitted, setNabhSubmitted] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successResponse, setSuccessResponse] = useState(null);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -659,28 +659,29 @@ const ClinicRegistration = () => {
     try {
       const convertIfExists = async (file) => {
         if (!file) return "";
+        if (file.base64) return file.base64;
         if (file instanceof Blob) return await convertFileToBase64(file);
-        return file;
+        if (typeof file === "string") return file;
+        return "";
       };
 
       const convertMultipleIfExists = async (files) => {
         if (!Array.isArray(files)) return [];
         return await Promise.all(
           files.map(async (file) => {
-            if (file?.base64) return file.base64;
+            if (!file) return "";
+            if (file.base64) return file.base64;
             if (file instanceof Blob) return await convertFileToBase64(file);
-            return file;
+            if (typeof file === "string") return file;
+            return "";
           })
         );
       };
 
-      // 🔥 GET TOKEN FROM LOCAL STORAGE
-      const onboardingToken = localStorage.getItem("onboardingToken");
-
-      // Convert Files (same as you had)
-      const hospitalLogoBase64 = await convertIfExists(formData.hospitalLogo);
-      const hospitalDocumentsBase64 = await convertIfExists(formData.hospitalDocuments);
+      // Convert files
       const contractorDocumentsBase64 = await convertIfExists(formData.contractorDocuments);
+      const hospitalDocumentsBase64 = await convertIfExists(formData.hospitalDocuments);
+      const hospitalLogoBase64 = await convertIfExists(formData.hospitalLogo);
       const clinicalEstablishmentCertificateBase64 = await convertIfExists(formData.clinicalEstablishmentCertificate);
       const businessRegistrationCertificateBase64 = await convertIfExists(formData.businessRegistrationCertificate);
       const drugLicenseCertificateBase64 = await convertIfExists(formData.drugLicenseCertificate);
@@ -692,10 +693,19 @@ const ClinicRegistration = () => {
       const gstRegistrationCertificateBase64 = await convertIfExists(formData.gstRegistrationCertificate);
       const othersBase64 = await convertMultipleIfExists(formData.others);
 
-      // 🔥 FINAL BODY (TOKEN IN BODY)
+      const onboardingToken = localStorage.getItem("onboardingToken");
+
+      const cleanValue = (val) => {
+        if (val === null || val === undefined) return "";
+        if (typeof val === "string" || typeof val === "number" || typeof val === "boolean")
+          return val;
+        if (val?.value) return val.value;
+        if (Array.isArray(val)) return val.map((v) => cleanValue(v));
+        return "";
+      };
+
       const clinicData = {
         token: onboardingToken,
-
         contractorDocuments: contractorDocumentsBase64,
         hospitalDocuments: hospitalDocumentsBase64,
         hospitalLogo: hospitalLogoBase64,
@@ -709,35 +719,41 @@ const ClinicRegistration = () => {
         professionalIndemnityInsurance: professionalIndemnityInsuranceBase64,
         gstRegistrationCertificate: gstRegistrationCertificateBase64,
         others: othersBase64,
-
-        ...formData,
-        website: normalizeWebsite(formData.website.trim()),
+        ...Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, cleanValue(v)])),
+        website: normalizeWebsite(formData.website?.trim() || "")
       };
 
       const response = await axios.post(CLINIC_REGISTRATION_URL, clinicData);
       const savedClinicData = response.data;
 
-      // 🔥 When success → Open Modal Instead of Redirect
-      if (savedClinicData.success) {
+      if (savedClinicData?.success) {
+
+        // 🔥 FIX: Proper modal states
         setSuccessResponse({
-          status: savedClinicData.data?.status || "PENDING",
-          message: savedClinicData.data?.message || "Clinic registered successfully",
-          clinicId: savedClinicData.data?.clinicId,
+          status: savedClinicData.data.status,
+          message: savedClinicData.message,
+          clinicId: savedClinicData.data.clinicId,
         });
 
         setShowSuccessModal(true);
-        return; // stop further actions
+
+        setTimeout(() => {
+          window.close();
+        }, 2500);
+
       } else {
         toast.error(savedClinicData.message || "Something went wrong");
       }
 
     } catch (error) {
-      console.error("Error submitting clinic data:", error);
-      toast.error(error.message || "Something went wrong");
+      console.error("Error submitting clinic:", error);
+      toast.error(error.message || "Failed to submit clinic");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+
 
 
   return (
@@ -1952,7 +1968,11 @@ const ClinicRegistration = () => {
               </CButton>
             </div>
           </CForm>
-          <CModal visible={showSuccessModal} onClose={() => setShowSuccessModal(false)}>
+          <CModal
+            visible={showSuccessModal}
+            alignment="center"
+            backdrop="static"
+          >
             <CModalHeader>
               <CModalTitle>Registration Successful</CModalTitle>
             </CModalHeader>
@@ -1965,16 +1985,17 @@ const ClinicRegistration = () => {
 
             <CModalFooter>
               <CButton
-                color="primary"
+                color="success"
                 onClick={() => {
                   setShowSuccessModal(false);
-                  window.close();   // 🔥 Close the current window
+                  window.close();   // 🔥 closes window
                 }}
               >
                 OK
               </CButton>
             </CModalFooter>
           </CModal>
+
 
         </CCardBody>
       </CCard>
