@@ -159,7 +159,7 @@ const Login = () => {
 
               {/* Welcome/Brand Card */}
               <CCard className="text-white py-5 d-none d-md-block"
-                style={{ width: '44%', background: 'linear-gradient(135deg, #d7b3fdff, #d6e5ffff)' }}>
+                style={{ width: '44%', background: '#d6e5ffff' }}>
                 <CCardBody className="text-center">
                   <h2 style={{ color: 'black' }}>Welcome!</h2>
                   <p style={{ fontSize: '0.95rem', color: '#000' }}>
