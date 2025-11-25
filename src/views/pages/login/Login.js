@@ -101,7 +101,7 @@ const Login = () => {
 
   return (
 
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #e0f0ff, #cce6ff)' }}
+    <div style={{ minHeight: '100vh',backgroundColor:"white" }}
       className="d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center">
