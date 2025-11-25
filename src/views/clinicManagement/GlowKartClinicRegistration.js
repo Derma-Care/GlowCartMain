@@ -23,12 +23,13 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react'
-import { AllClinicData, BASE_URL, CLINIC_REGISTRATION_URL, ClinicAllData, getAllQuestions, postAllQuestionsAndAnswers } from '../../baseUrl'
+import { AllClinicData, BASE_URL, BASE_URL_API, CLINIC_REGISTRATION_URL, ClinicAllData, getAllQuestions, postAllQuestionsAndAnswers } from '../../baseUrl'
 import { CategoryData } from '../categoryManagement/CategoryAPI'
 import sendDermaCareOnboardingEmail from '../../Utils/Emailjs'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { getClinicTimings } from './GlowKartgetTimingsAPI'
+import ClinicOnboardingSuccess from './SuccessOnboradClinic'
 
 const ClinicRegistration = () => {
   const refs = {
@@ -69,6 +70,7 @@ const ClinicRegistration = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successResponse, setSuccessResponse] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -563,7 +565,7 @@ const ClinicRegistration = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/${getAllQuestions}`, {
+        const response = await axios.get(`${BASE_URL_API}/${getAllQuestions}`, {
           params: { id: savedQuestionId }
         });
 
@@ -598,7 +600,7 @@ const ClinicRegistration = () => {
       };
 
       const response = await axios.post(
-        `${BASE_URL}/${postAllQuestionsAndAnswers}`,
+        `${BASE_URL_API}/${postAllQuestionsAndAnswers}`,
         payload
       );
 
@@ -734,7 +736,7 @@ const ClinicRegistration = () => {
           message: savedClinicData.message,
           clinicId: savedClinicData.data.clinicId,
         });
-
+        setIsSuccess(true);
         setShowSuccessModal(true);
 
         setTimeout(() => {
@@ -1022,7 +1024,7 @@ const ClinicRegistration = () => {
               <CCol md={6}>
                 <CFormLabel>
                   Primary Contact Person
-                 <span style={{ color: 'red' }}>*</span>
+                  <span style={{ color: 'red' }}>*</span>
                 </CFormLabel>
 
                 <CFormInput
@@ -1963,6 +1965,11 @@ const ClinicRegistration = () => {
               </CButton>
             </div>
           </CForm>
+
+
+
+
+
           <CModal
             visible={showSuccessModal}
             alignment="center"
@@ -1994,7 +2001,14 @@ const ClinicRegistration = () => {
 
         </CCardBody>
       </CCard>
+      {
+        isSuccess && <ClinicOnboardingSuccess
+          clinicName={formData.clinicName}
+          onClose={() => window.close()}
+        />
+      }
     </div >
+
   )
 }
 
