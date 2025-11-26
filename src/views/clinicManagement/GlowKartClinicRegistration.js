@@ -667,7 +667,8 @@ const ClinicRegistration = () => {
   }, []);
 
 
- const handleSubmit = async (e) => {
+
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const isValid = validateForm();
@@ -687,9 +688,7 @@ const ClinicRegistration = () => {
 
     const convertMultipleIfExists = async (files) => {
       if (!Array.isArray(files)) return [];
-      return await Promise.all(
-        files.map(async (file) => convertIfExists(file))
-      );
+      return Promise.all(files.map((file) => convertIfExists(file)));
     };
 
     const contractorDocumentsBase64 = await convertIfExists(formData.contractorDocuments);
@@ -718,18 +717,21 @@ const ClinicRegistration = () => {
       website: normalizeWebsite(formData.website?.trim() || "")
     };
 
-    // ✅ Make API call
+    // API call
     const response = await axios.post(CLINIC_REGISTRATION_URL, clinicData);
     const savedClinicData = response.data;
 
-    // ✅ Check success immediately AFTER API call
+    console.log(savedClinicData);
+
+    // SUCCESS CHECK (corrected)
     if (savedClinicData?.success === true) {
       navigate("/clinic-onboarding-success", {
         state: {
-          clinicName: formData.clinicName,
-          clinicId: savedClinicData.data.clinicId,
+          clinicName: formData.name,
+          clinicId: savedClinicData.data?.clinicId,
           message: savedClinicData.message,
-          status: savedClinicData.data.status,
+          status: savedClinicData.data?.status,
+          shouldClose: true,
         },
       });
       return;
@@ -744,6 +746,7 @@ const ClinicRegistration = () => {
     setIsSubmitting(false);
   }
 };
+
 
   return (
     <div className="container mt-4">
