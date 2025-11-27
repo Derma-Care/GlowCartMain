@@ -88,9 +88,7 @@ export default function ClinicOnboardingSuccess({ onClose }) {
                         }}
                     >
                         🌐 Explore Website
-                    </button>
-
-                    
+                    </button>   
                 </div>
 
                 {/* COMPANY DETAILS SECTION */}
