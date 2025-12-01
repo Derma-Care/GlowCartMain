@@ -75,7 +75,7 @@ export default function ClinicOnboardingSuccess({ onClose }) {
                 {/* BUTTONS */}
                 <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", marginTop: "30px" }}>
                     <button
-                        onClick={() => window.open("https://chiselontechnologies.com/", "_blank")}
+                        onClick={() => window.open("https://chiselontechnologies.com/ccms", "_blank")}
                         style={{
                             background: "#1e40af",
                             color: "white",
