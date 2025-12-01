@@ -784,14 +784,20 @@ const ClinicRegistration = () => {
       const clinicData = {
         token: onboardingToken,
         email: onboardingEmail,
+
+        ...Object.fromEntries(
+          Object.entries(formData).map(([k, v]) => [k, cleanValue(v)])
+        ),
+
+        // ⬇️ THESE MUST COME AFTER SPREAD (so they cannot be overwritten)
         contractorDocuments: contractorDocumentsBase64,
         hospitalDocuments: hospitalDocumentsBase64,
-        // ⬇️ ADD THIS LINE
-        doctorsList: formData.doctorsList,
         others: othersBase64,
-        ...Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, cleanValue(v)])),
+        doctorsList: formData.doctorsList,
+
         website: normalizeWebsite(formData.website?.trim() || "")
       };
+
 
       // API call
       const response = await axios.post(CLINIC_REGISTRATION_URL, clinicData);
