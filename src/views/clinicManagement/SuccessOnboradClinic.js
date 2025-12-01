@@ -51,7 +51,7 @@ export default function ClinicOnboardingSuccess({ onClose }) {
                         style={{ marginBottom: "25px", filter: "drop-shadow(0px 4px 4px rgba(0,0,0,0.2))" }}
                     />
                     <h3 className="mx-3" style={{ fontWeight: "bold", color: "var(--color-black)", marginBottom: "25px" }}>
-                        Neha's GlowKart
+                        Neeha's GlowKart
                     </h3>
                 </div> */}
 
