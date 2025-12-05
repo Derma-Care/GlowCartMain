@@ -204,20 +204,23 @@ const ServiceManagement = () => {
   const handleChange = (e) => {
     const { name, value, files, type } = e.target
 
+
     if (type === 'file' && files && files[0]) {
-      const file = files[0]
-      const reader = new FileReader()
+      const file = files[0];
+      const reader = new FileReader();
       reader.onloadend = () => {
         setNewService((prev) => ({
           ...prev,
           [name]: reader.result, // full base64 data URL
           serviceImageFile: file,
-        }))
-      }
-      reader.readAsDataURL(file)
-      return
-    }
+        }));
 
+        // Clear error for the file field
+        setErrors((prev) => ({ ...prev, [name]: '' }));
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
     const numericFields = [
       'consultationFee',
       'minTimeValue',
@@ -513,7 +516,7 @@ const ServiceManagement = () => {
 
   return (
     <div style={{ overflow: 'hidden' }}>
-      <ToastContainer />
+      <ToastContainer closeOnClick={true} />
 
       {/* Top Right "Add" Button (if needed) */}
       <div>

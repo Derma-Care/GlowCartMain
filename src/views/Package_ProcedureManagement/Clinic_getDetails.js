@@ -21,6 +21,7 @@ import {
 } from '@coreui/react'
 import LoadingIndicator from '../../Utils/loader'
 import { toast } from 'react-toastify'
+import capitalizeWords from '../../Utils/capitalizeWords'
 
 const Clinic_getDetails = ({ service }) => {
   const navigate = useNavigate()
@@ -120,17 +121,49 @@ const Clinic_getDetails = ({ service }) => {
                       currentItems.map((clinic, index) => (
                         <CTableRow key={clinic?.clinicId || index}>
                           <CTableDataCell className="text-center">{indexOfFirstItem + index + 1}</CTableDataCell>
-                          <CTableDataCell className="text-center">{clinic?.name || "N/A"}</CTableDataCell>
+                          <CTableDataCell className="text-center">{capitalizeWords(clinic?.name || "N/A")}</CTableDataCell>
                           <CTableDataCell className="text-center">{clinic?.contactNumber || "N/A"}</CTableDataCell>
                           <CTableDataCell className="text-center">{clinic?.email || "N/A"}</CTableDataCell>
-                          <CTableDataCell className="text-center">{clinic?.city || "N/A"}</CTableDataCell>
+                          <CTableDataCell className="text-center">{capitalizeWords(clinic?.city || "N/A")}</CTableDataCell>
                           <CTableDataCell className="text-center">
                             {clinic?.status ? (
-                              <span className="text-success fw-bold">Verified</span>
+                              <CButton
+                                color="success"
+                                size="sm"
+                                variant="outline"
+                                style={{
+                                  backgroundColor: 'transparent',
+                                  color: '#198754', // match success color
+                                  borderColor: '#198754',
+                                  boxShadow: 'none',
+                                }}
+                                onMouseOver={(e) => e.preventDefault()}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onFocus={(e) => e.preventDefault()}
+                              >
+                                Verified
+                              </CButton>
                             ) : (
-                              <span className="text-danger fw-bold">Not Verified</span>
+                              <CButton
+                                color="danger"
+
+                                size="sm"
+                                variant="outline"
+                                style={{
+                                  backgroundColor: 'transparent',
+                                  color: '#dc3545', // match danger color
+                                  borderColor: '#dc3545',
+                                  boxShadow: 'none',
+                                }}
+                                onMouseOver={(e) => e.preventDefault()}
+                                onMouseDown={(e) => e.preventDefault()}
+                                onFocus={(e) => e.preventDefault()}
+                              >
+                                Not Verified
+                              </CButton>
                             )}
                           </CTableDataCell>
+
                           <CTableDataCell className="text-center">
                             <button
                               className="actionBtn"

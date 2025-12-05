@@ -26,7 +26,7 @@ export const subServiceData = async (serviceId) => {
   try {
     // const response = await axios.get(`${BASE_URL}/serviceId/${serviceId}`)
     const response = await axios.get(
-      `${BASE_URL}/${getadminSubServicesbyserviceId}/${serviceId}`, //TODO:chnage when apigetway call axios to axios
+      `${BASE_URL}/${getadminSubServicesbyserviceId}/${serviceId}`, 
     )
 
     console.log('Service response:', response.data)

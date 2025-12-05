@@ -22,6 +22,7 @@ import {
 import { COLORS } from '../../Constant/Themes'
 import LoadingIndicator from '../../Utils/loader'
 import { toast } from 'react-toastify'
+import capitalizeWords from '../../Utils/capitalizeWords'
 
 // Backend → UI Status
 const mapBackendStatusToUI = (status) => {
@@ -264,15 +265,10 @@ const ClinicManagement = ({ service }) => {
                       currentItems.map((clinic, index) => (
                         <CTableRow key={clinic?.clinicId || index}>
                           <CTableDataCell className="text-center">{indexOfFirstItem + index + 1}</CTableDataCell>
-                          <CTableDataCell className="text-center">{clinic?.name ? clinic.name.charAt(0).toUpperCase() + clinic.name.slice(1)
-                            : ""}</CTableDataCell>
+                          <CTableDataCell className="text-center">{capitalizeWords(clinic?.name || "N/A")}</CTableDataCell>
                           <CTableDataCell className="text-center">{clinic?.contactNumber}</CTableDataCell>
                           <CTableDataCell className="text-center">{clinic?.email}</CTableDataCell>
-                          <CTableDataCell className="text-center">
-                            {clinic?.city
-                              ? clinic.city.charAt(0).toUpperCase() + clinic.city.slice(1)
-                              : ""}
-                          </CTableDataCell>
+                          <CTableDataCell className="text-center">{capitalizeWords(clinic?.city || "N/A")}</CTableDataCell>
                           <CTableDataCell className="text-center">
                             <button className="actionBtn" title="View" onClick={() =>
                               navigate(`/clinic-details/${clinic.clinicId}`, { state: clinic })
