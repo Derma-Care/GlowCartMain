@@ -184,6 +184,22 @@ const PackageFormModal = ({
                 <CFormText className="text-danger">{errors.viewDescription}</CFormText>
               )}
             </CCol>
+            {isEdit && (
+              <CCol md={6} className="mb-4">
+                <h6>
+                  NGK Discount
+                </h6>
+                <CFormInput
+                  type="number"
+                  placeholder="NGK Discount"
+                  name="ngkDiscount"
+                  value={newService.ngkDiscount || ''}
+                  onChange={onChange}
+                   min={0}
+                />
+
+              </CCol>
+            )}
           </CRow>
 
 
@@ -223,7 +239,7 @@ const PackageFormModal = ({
                 <CCol md={4} xs={3} className="sitting-col">
                   <CFormInput
                     type="number"
-                    placeholder="Sit"
+                    placeholder="Sittings"
                     value={item.sittings}
                     onChange={(e) =>
                       onChange({
@@ -234,6 +250,7 @@ const PackageFormModal = ({
                         },
                       })
                     }
+                     min={0}
                   />
                   {errors[`sittings_${index}`] && (
                     <p className="text-danger">{errors[`sittings_${index}`]}</p>

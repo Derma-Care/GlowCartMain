@@ -65,6 +65,7 @@ const PackageManagement = () => {
     postProcedureQA: [],
     packageName: '',
     packageId: '',
+    ngkDiscount: '',
     // packageProcedures: [{ procedureId: '', sittings: '' }],
     packageProcedures: [],
   })
@@ -450,7 +451,7 @@ const PackageManagement = () => {
     setNewService({
       packageId: service.packageId,
       packageName: service.packageName,
-
+      // ngkDiscount: service.ngkDiscount,  //TODO:
       price: String(service.price ?? ''),
       discount: String(service.discountPercentage ?? ''),
       gst: String(service.gst ?? ''),
@@ -590,6 +591,7 @@ const PackageManagement = () => {
         packageId: newService.packageId || '',
         description: newService.viewDescription || '',
         procedures: proceduresPayload,
+        // ngkDiscount:newService.ngkDiscount,   //TODO:After backend provide enable the line
         // minTime: newService.minTimeValue
         //   ? `${newService.minTimeValue} ${newService.minTimeUnit}`
         //   : '',
