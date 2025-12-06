@@ -231,10 +231,28 @@ Best regards,
                                 fontSize: "0.75rem",
                                 fontWeight: 500,
                                 cursor: "pointer",
-                                alignSelf: "center", // keep it centered horizontally
                               }}
                             >
                               Send
+                            </button>
+                          )}
+
+                          {/* USED CODES → ONLY USED BUTTON */}
+                          {isUsed && (
+                            <button
+                              style={{
+                                background: "#ffe6e6",
+                                color: "#cc0000",
+                                border: "1px solid #cc0000",
+                                borderRadius: "6px",
+                                padding: "4px 12px",
+                                fontSize: "0.75rem",
+                                fontWeight: 500,
+                                cursor: "not-allowed",
+                              }}
+                              disabled
+                            >
+                              Used
                             </button>
                           )}
                         </div>
