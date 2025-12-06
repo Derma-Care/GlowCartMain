@@ -111,24 +111,34 @@ const CustomerManagement = () => {
   }, [fetchCustomers])
 
   useEffect(() => {
-    const trimmedQuery = searchQuery.toLowerCase().trim()
-    if (!trimmedQuery) {
-      setFilteredData(customerData)
-      setCurrentPage(1)
-      return
-    }
-
-    const filtered = customerData.filter((customer) => {
-      return (
-        (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery) ||
-        (customer?.mobile || '').toString().startsWith(trimmedQuery) ||
-        (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
-      )
-    })
-
-    setFilteredData(filtered)
+  const trimmedQuery = searchQuery.toLowerCase().trim()
+  if (!trimmedQuery) {
+    setFilteredData(customerData)
     setCurrentPage(1)
-  }, [searchQuery, customerData])
+    return
+  }
+
+  const filtered = customerData.filter((customer) => {
+    const fullNameMatch = (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery)
+    const mobileMatch = (customer?.mobile || '').toString().startsWith(trimmedQuery)
+    const emailMatch = (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
+
+    // Extract pincode from address if available
+    const addressPincode = customer?.address?.match(/\b\d{6}\b/)?.[0] || ''
+    const pincodeMatch = addressPincode.startsWith(trimmedQuery)
+
+    // Service type match
+    const serviceTypeMatch = (customer?.serviceType || []).some(
+      (type) => type.toLowerCase().startsWith(trimmedQuery)
+    )
+
+    return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch
+  })
+
+  setFilteredData(filtered)
+  setCurrentPage(1)
+}, [searchQuery, customerData])
+
 
   const handleCustomerViewDetails = (mobile) => {
     navigate(`/customer-management/${mobile}`)
@@ -271,20 +281,47 @@ const CustomerManagement = () => {
   }
 
 
-  const handleCancel = () => {
-    setIsAdding(false)
-    setIsEditing(false)
-    setCurrentMobile(null)
-    setFormData({
-      fullName: '',
-      mobile: '',
-      gender: '',
-      emailId: '',
-      dob: '',
-      referCode: '',
-    })
-    setFormErrors({})
+ const handleCancel = () => {
+  setIsAdding(false)
+  setIsEditing(false)
+  setCurrentMobile(null)
+  setFormData({
+    fullName: '',
+    mobile: '',
+    gender: '',
+    emailId: '',
+    dob: '',
+    referCode: '',
+  })
+  setFormErrors({})
+
+  // Preserve search filtered data
+  if (searchQuery.trim()) {
+    // If search query exists, keep filteredData as is
+    setFilteredData(
+      customerData.filter((customer) => {
+        const trimmedQuery = searchQuery.toLowerCase().trim()
+        const fullNameMatch = (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery)
+        const mobileMatch = (customer?.mobile || '').toString().startsWith(trimmedQuery)
+        const emailMatch = (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
+
+        const addressPincode = customer?.address?.match(/\b\d{6}\b/)?.[0] || ''
+        const pincodeMatch = addressPincode.startsWith(trimmedQuery)
+
+        const serviceTypeMatch = (customer?.serviceType || []).some(
+          (type) => type.toLowerCase().startsWith(trimmedQuery)
+        )
+
+        return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch
+      })
+    )
+  } else {
+    // If no search query, show all data
+    setFilteredData(customerData)
   }
+  setCurrentPage(1)
+}
+
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,

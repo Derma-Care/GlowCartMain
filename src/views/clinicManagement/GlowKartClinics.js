@@ -280,13 +280,19 @@ const ClinicManagement = ({ service }) => {
                             <CFormSelect
                               value={mapBackendStatusToUI(clinic?.status)}
                               onChange={(e) => handleStatusChange(e.target.value, clinic.clinicId)}
-                              style={{ color: "var(--color-black)" }}
+                              style={{
+                                ...statusStyles[mapBackendStatusToUI(clinic?.status)],
+                                borderRadius: "6px",
+                                padding: "6px",
+                                border: "1px solid #ccc",
+                              }}
                             >
                               <option value="pending">Pending</option>
                               <option value="start">Started</option>
                               <option value="verified">Verified</option>
                               <option value="rejected">Rejected</option>
                             </CFormSelect>
+
                           </CTableDataCell>
                         </CTableRow>
                       ))
@@ -456,3 +462,27 @@ const ClinicManagement = ({ service }) => {
 }
 
 export default ClinicManagement
+// 🔥 STATUS BASED STYLES
+const statusStyles = {
+  pending: {
+    backgroundColor: "#FFE4B5",
+    color: "#8B4513",
+    fontWeight: "600",
+  },
+  start: {
+    backgroundColor: "#BEE3F8",
+    color: "#0C4A6E",
+    fontWeight: "600",
+  },
+  verified: {
+    backgroundColor: "#C6F6D5",
+    color: "#22543D",
+    fontWeight: "600",
+  },
+  rejected: {
+    backgroundColor: "#FED7D7",
+    color: "#822727",
+    fontWeight: "600",
+  },
+};
+
