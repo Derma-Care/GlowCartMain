@@ -470,8 +470,8 @@ const CustomerManagement = () => {
 
           {loading ? (
             <CTable striped hover responsive>
-              <CTableHead className='pink-table'>
-                <CTableRow>
+              <CTableHead>
+                <CTableRow >
                   <CTableHeaderCell colSpan={6} className="text-center">
                     <LoadingIndicator message="Loading customer data..." />
                   </CTableHeaderCell>
