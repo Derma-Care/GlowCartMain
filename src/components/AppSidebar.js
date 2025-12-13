@@ -77,7 +77,7 @@ const AppSidebar = () => {
             marginBottom: '6px',
           }}
         >
-          UDIT Cosmetics PVT LTD
+         Udit Cosmetech Private Limited
         </div>
 
         <CSidebarToggler
