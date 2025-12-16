@@ -17,11 +17,11 @@ import {
 } from "@coreui/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllRegistrationCodes } from "./RegistrationCodesApi";
+import { getAllRegistrationCodes_Dev } from "./RegistrationCodesApi";
 import CIcon from "@coreui/icons-react";
 import { cilCopy } from "@coreui/icons";
 
-const RegistrationCodeManagement = () => {
+const RegistrationCodeManagementDev = () => {
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("NGK-");
@@ -34,7 +34,7 @@ const RegistrationCodeManagement = () => {
   const [name, setName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [customLink, setCustomLink] = useState(
-    "https://registration.ngkderma.com"
+    "https://glowkartclinic.ashokfruit.shop/NGK-Registration-Form"
   );
   useEffect(() => {
     fetchCodes();
@@ -50,7 +50,7 @@ const RegistrationCodeManagement = () => {
   const fetchCodes = async () => {
     setLoading(true);
     try {
-      const response = await getAllRegistrationCodes();
+      const response = await getAllRegistrationCodes_Dev();
       setCodes(response);
     } catch (err) {
       toast.error("Failed to load registration codes");
@@ -85,7 +85,7 @@ const RegistrationCodeManagement = () => {
     setName("");
     setMobileNumber("");
     setCustomLink(
-      "https://registration.ngkderma.com"
+      "https://glowkartclinic.ashokfruit.shop/NGK-Registration-Form"
     );
     setModalVisible(true);
   };
@@ -508,4 +508,4 @@ Warm regards,
   );
 };
 
-export default RegistrationCodeManagement;
+export default RegistrationCodeManagementDev;
