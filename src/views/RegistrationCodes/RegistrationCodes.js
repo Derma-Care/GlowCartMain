@@ -24,7 +24,7 @@ import { cilCopy } from "@coreui/icons";
 const RegistrationCodeManagement = () => {
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("NGK-");
+  const [searchText, setSearchText] = useState("");
   const [filterType, setFilterType] = useState("all"); // <- add this
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(100);
@@ -59,14 +59,20 @@ const RegistrationCodeManagement = () => {
   };
 
   const filteredCodes = codes
-    .filter((code) =>
-      code.code.toLowerCase().includes(searchText.toLowerCase())
-    )
-    .filter((code) => {
-      if (filterType === "used") return code.used;
-      if (filterType === "unused") return !code.used;
+    .filter((item) => {
+      const search = searchText.toLowerCase();
+
+      return (
+        item.code.toLowerCase().includes(search) ||
+        String(item.rank ?? "").includes(search)
+      );
+    })
+    .filter((item) => {
+      if (filterType === "used") return item.used;
+      if (filterType === "unused") return !item.used;
       return true;
     });
+
 
 
   const usedCount = codes.filter((code) => code.used).length;
@@ -176,12 +182,10 @@ Warm regards,
             </div>
           </div>
           <CFormInput
-            placeholder="Search code..."
+            placeholder="Search by code or rank..."
             value={searchText}
             onChange={(e) => {
-              let val = e.target.value;
-              if (!val.startsWith("NGK-")) val = "NGK-";
-              setSearchText(val);
+              setSearchText(e.target.value);
               setCurrentPage(1);
             }}
             style={{ maxWidth: "250px", marginTop: "5px", color: "#aaa" }}
