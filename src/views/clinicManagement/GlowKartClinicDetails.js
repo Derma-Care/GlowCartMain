@@ -11,6 +11,7 @@ import { updateClinic, deleteClinic, AllClinicData } from "../../baseUrl";
 import "./ClinicDetails.css";
 import { toast } from "react-toastify";
 import { getClinicTimings } from "./GlowKartgetTimingsAPI";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 /** ⭐ LABEL MAP FOR PRETTY UI */
 const LABELS = {
@@ -102,29 +103,30 @@ const ClinicDetails = () => {
     const [doctorErrors, setDoctorErrors] = useState({});
     const [logoUploaded, setLogoUploaded] = useState(false);
     const [logoUploadStatus, setLogoUploadStatus] = useState("idle");
-
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [formData, setFormData] = useState(null);  // ✨ FIXED (No default state)
     const [activeTab, setActiveTab] = useState(1);
     const [editMode, setEditMode] = useState({});
     const [loading, setLoading] = useState(false);
     const [timings, setTimings] = useState([]);
     const [loadingTimings, setLoadingTimings] = useState(false);
+    const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
+    const [fileKeyToDelete, setFileKeyToDelete] = useState(null);
 
     /** ⭐ LOAD DATA WHEN PAGE OPENS OR REFRESHES */
     useEffect(() => {
-        if (state) {
-            setFormData(state); // coming from previous page
-        } else {
-            fetchClinicDetails(); // direct page load / refresh
-        }
-    }, [state]);
+        fetchClinicDetails();
+    }, [clinicId]);
 
     /** 📌 API CALL TO GET CLINIC DATA */
     const fetchClinicDetails = async () => {
         try {
-            const res = await fetch(`${AllClinicData}/${clinicId}`);
-            const data = await res.json();
-            setFormData(data);
+            const res = await fetch(`${AllClinicData}/get/${clinicId}`);
+            const result = await res.json();
+
+            // ✅ SAFE FOR BOTH RESPONSE TYPES
+            setFormData(result.data ?? result);
+
         } catch (error) {
             toast.error("Failed to load clinic data");
         }
@@ -149,6 +151,7 @@ const ClinicDetails = () => {
         setLoading(true);
         try {
             await updateClinic(clinicId, formData);
+            await fetchClinicDetails();
             toast.success(` ${section} updated!`);
             setEditMode({});
         } catch {
@@ -170,16 +173,19 @@ const ClinicDetails = () => {
         }
     };
 
-    const deleteFile = async (key) => {
-        if (!window.confirm("Delete file?")) return;
+    const deleteFile = async () => {
         try {
-            await updateClinic(clinicId, { [key]: null });
-            setFormData({ ...formData, [key]: null });
+            await updateClinic(clinicId, { [fileKeyToDelete]: null });
+            setFormData({ ...formData, [fileKeyToDelete]: null });
             toast.success("File deleted!");
         } catch {
             toast.error("Delete failed!");
+        } finally {
+            setShowFileDeleteModal(false);
+            setFileKeyToDelete(null);
         }
     };
+
 
     const replaceFile = (key, file) => {
         if (!file) return;
@@ -404,10 +410,7 @@ const ClinicDetails = () => {
                     </h5>
 
                     <div className="d-flex gap-2">
-                        <CButton color="danger"
-                            onClick={() => window.confirm("Delete clinic?") &&
-                                deleteClinic(clinicId).then(() => navigate(-1))}
-                        >
+                        <CButton color="danger" onClick={() => setShowDeleteModal(true)}>
                             Delete Clinic
                         </CButton>
 
@@ -419,6 +422,22 @@ const ClinicDetails = () => {
                         </CButton>
                     </div>
                 </div>
+                <ConfirmationModal
+                    isVisible={showDeleteModal}
+                    title="Delete Clinic"
+                    message="Are you sure you want to permanently delete this clinic? This action cannot be undone."
+                    confirmText="Yes, Delete"
+                    cancelText="No, Cancel"
+                    confirmColor="danger"
+                    cancelColor="secondary"
+                    onConfirm={async () => {
+                        await deleteClinic(clinicId);
+                        toast.success("Clinic deleted successfully!");
+                        setShowDeleteModal(false);
+                        navigate(-1); // go back
+                    }}
+                    onCancel={() => setShowDeleteModal(false)}
+                />
 
                 <CCardBody>
 
@@ -679,9 +698,17 @@ const ClinicDetails = () => {
                                                             <Download size={15} /> Download
                                                         </CButton>
 
-                                                        <CButton color="danger" size="sm" onClick={() => deleteFile(key)}>
+                                                        <CButton
+                                                            color="danger"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setFileKeyToDelete(key);
+                                                                setShowFileDeleteModal(true);
+                                                            }}
+                                                        >
                                                             <Trash2 size={15} /> Delete
                                                         </CButton>
+
 
                                                         <label className="btn btn-warning btn-sm">
                                                             <Edit size={15} /> Replace
@@ -919,8 +946,8 @@ const ClinicDetails = () => {
                             <div className="section-card">
                                 <CRow>
                                     {[
-                                        "licenseNumber", "issuingAuthority", "hasPharmacist", "medicinesSoldOnSite",
-                                        "panNumber", "nabhScore", "walkthrough"
+                                        "licenseNumber", "issuingAuthority",
+                                        "panNumber", "walkthrough"
                                     ].map((key) => (
                                         <CCol md={6} key={key}>
                                             <div className="clinic-field">
@@ -953,32 +980,38 @@ const ClinicDetails = () => {
 
                                     {/* ⭐ HOSPITAL LOGO SECTION */}
                                     <CCol md={6}>
-                                        <div className="clinic-field flex-column">
+                                        <div className="clinic-field">
                                             <span className="clinic-label">Hospital Logo</span>
 
-                                            {formData.hospitalLogo ? (
-                                                <>
+                                            {formData.hospitalLogo && (
+                                                <div className="d-flex flex-column align-items-start">
                                                     <CImage
                                                         width={120}
                                                         className="rounded border mb-2"
-                                                        src={`data:image/png;base64,${formData.hospitalLogo}`}
+                                                        src={
+                                                            formData.hospitalLogo.startsWith("data:image")
+                                                                ? formData.hospitalLogo
+                                                                : `data:image/png;base64,${formData.hospitalLogo}`
+                                                        }
                                                     />
 
                                                     {editMode.other && (
                                                         <div className="d-flex gap-2 mt-2">
+                                                            {formData.hospitalLogo && (
+                                                                <CButton
+                                                                    color="danger"
+                                                                    size="sm"
+                                                                    className="flex-fill"
+                                                                    onClick={() => {
+                                                                        setFileKeyToDelete("hospitalLogo");
+                                                                        setShowFileDeleteModal(true);
+                                                                    }}
+                                                                >
+                                                                    🗑 Delete
+                                                                </CButton>
+                                                            )}
 
-                                                            <CButton
-                                                                color="danger"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    deleteFile("hospitalLogo");
-                                                                    setLogoUploaded(false);
-                                                                }}
-                                                            >
-                                                                🗑 Delete
-                                                            </CButton>
-
-                                                            <label className={`btn ${logoUploaded ? "btn-success" : "btn-warning"} btn-sm mt-1`}>
+                                                            <label className={`btn ${logoUploaded ? "btn-success" : "btn-warning"} btn-sm flex-fill`}>
                                                                 {logoUploaded ? "✔ Uploaded" : "📤 Upload"}
                                                                 <input
                                                                     type="file"
@@ -989,13 +1022,14 @@ const ClinicDetails = () => {
                                                                     }}
                                                                 />
                                                             </label>
-
                                                         </div>
                                                     )}
-                                                </>
-                                            ) : (
-                                                editMode.other && (
-                                                    <label className={`btn ${logoUploaded ? "btn-success" : "btn-warning"} btn-sm mt-1`}>
+                                                </div>
+                                            )}
+
+                                            {!formData.hospitalLogo && editMode.other && (
+                                                <div className="d-flex gap-2 mt-2">
+                                                    <label className={`btn ${logoUploaded ? "btn-success" : "btn-warning"} btn-sm flex-fill`}>
                                                         {logoUploaded ? "✔ Uploaded" : "📤 Upload"}
                                                         <input
                                                             type="file"
@@ -1006,10 +1040,11 @@ const ClinicDetails = () => {
                                                             }}
                                                         />
                                                     </label>
-                                                )
+                                                </div>
                                             )}
                                         </div>
                                     </CCol>
+
 
                                 </CRow>
 
@@ -1029,6 +1064,19 @@ const ClinicDetails = () => {
                             </div>
                         </CTabPane>
 
+                        <ConfirmationModal
+                            isVisible={showFileDeleteModal}
+                            title="Delete File"
+                            message="Are you sure you want to delete this file?"
+                            confirmText="Delete"
+                            cancelText="Cancel"
+                            confirmColor="danger"
+                            onConfirm={deleteFile}
+                            onCancel={() => {
+                                setShowFileDeleteModal(false);
+                                setFileKeyToDelete(null);
+                            }}
+                        />
 
                     </CTabContent>
                 </CCardBody>
