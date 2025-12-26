@@ -7,7 +7,7 @@ import {
     CImage, CButton, CContainer
 } from "@coreui/react";
 import { Eye, Download, Trash2, Edit } from "lucide-react";
-import { updateClinic, deleteClinic } from "../../baseUrl";
+import { updateClinic, deleteClinic, AllClinicData } from "../../baseUrl";
 import "./ClinicDetails.css";
 import { toast } from "react-toastify";
 import { getClinicTimings } from "./GlowKartgetTimingsAPI";
@@ -34,6 +34,7 @@ const LABELS = {
     closingTime: "Closing Time",
     latitude: "Latitude",
     longitude: "Longitude",
+    state: "State",
     bankAccountName: "Account Holder",
     bankAccountNumber: "Account Number",
     ifscCode: "IFSC Code",
@@ -121,7 +122,7 @@ const ClinicDetails = () => {
     /** 📌 API CALL TO GET CLINIC DATA */
     const fetchClinicDetails = async () => {
         try {
-            const res = await fetch(`${GET_CLINIC_DETAILS_API}/${clinicId}`);
+            const res = await fetch(`${AllClinicData}/${clinicId}`);
             const data = await res.json();
             setFormData(data);
         } catch (error) {
@@ -526,18 +527,21 @@ const ClinicDetails = () => {
                             </div>
                         </CTabPane>
                         {/* ⭐ TAB 2 - ADDRESS & CONTACT */}
+                        {/* ⭐ TAB 2 - ADDRESS & CONTACT */}
                         <CTabPane visible={activeTab === 2}>
                             <div className="section-card">
                                 <CRow>
                                     {[
                                         "address", "city", "branch", "contactNumber", "whatsappNumber", "email", "website",
-                                        "openingTime", "closingTime", "latitude", "longitude"
+                                        "openingTime", "closingTime", "latitude", "longitude", "state"
                                     ].map((key) => (
                                         <CCol md={6} key={key}>
                                             <div className="clinic-field">
                                                 <span className="clinic-label">{LABELS[key]}:</span>
 
                                                 {editMode.addr ? (
+
+                                                    // ⭐ Opening Time Dropdown
                                                     key === "openingTime" ? (
                                                         <select
                                                             className={`form-select ${errors[key] ? "is-invalid" : ""}`}
@@ -551,6 +555,7 @@ const ClinicDetails = () => {
                                                             ))}
                                                         </select>
 
+                                                        // ⭐ Closing Time Dropdown
                                                     ) : key === "closingTime" ? (
                                                         <select
                                                             className={`form-select ${errors[key] ? "is-invalid" : ""}`}
@@ -564,6 +569,22 @@ const ClinicDetails = () => {
                                                             ))}
                                                         </select>
 
+                                                        // ⭐ Email Disabled (Requested)
+                                                    ) : key === "email" ? (
+                                                        <input
+                                                            className="form-control bg-light"
+                                                            value={formData.email || ""}
+                                                            disabled
+                                                            title="Email cannot be edited"
+                                                        />
+
+                                                    ) : key === "state" ? (
+                                                        <input
+                                                            className="form-control bg-light"
+                                                            value={formData.state || ""}
+                                                            disabled
+                                                            title="State cannot be edited"
+                                                        />
                                                     ) : (
                                                         <input
                                                             className={`form-control ${errors[key] ? "is-invalid" : ""}`}
@@ -571,7 +592,7 @@ const ClinicDetails = () => {
                                                             onChange={(e) => {
                                                                 const value = e.target.value;
 
-                                                                // ⭐ Typing rules
+                                                                // Typing validation rules
                                                                 if ((key === "city" || key === "branch") && !/^[A-Za-z\s.]*$/.test(value)) return;
                                                                 if ((key === "contactNumber" || key === "whatsappNumber") && !/^[0-9]*$/.test(value)) return;
                                                                 if ((key === "latitude" || key === "longitude") && !/^-?[0-9.]*$/.test(value)) return;
@@ -580,16 +601,20 @@ const ClinicDetails = () => {
                                                             }}
                                                         />
                                                     )
+
                                                 ) : (
+                                                    // ⭐ VIEW MODE
                                                     <span className="clinic-value">{formData[key] || "—"}</span>
                                                 )}
 
+                                                {/* ⭐ Show Validation Errors */}
                                                 {errors[key] && <small className="text-danger">{errors[key]}</small>}
                                             </div>
                                         </CCol>
                                     ))}
                                 </CRow>
 
+                                {/* ⭐ BOTTOM BUTTONS */}
                                 <ActionButtons
                                     edit={editMode.addr}
                                     loading={loading}
@@ -599,12 +624,13 @@ const ClinicDetails = () => {
                                     onDelete={() =>
                                         deleteSection([
                                             "address", "city", "branch", "contactNumber", "whatsappNumber", "email",
-                                            "website", "openingTime", "closingTime", "latitude", "longitude"
+                                            "website", "openingTime", "closingTime", "latitude", "longitude", "state"
                                         ])
                                     }
                                 />
                             </div>
                         </CTabPane>
+
 
 
 
