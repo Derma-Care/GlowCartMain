@@ -70,7 +70,7 @@ const LABELS = {
 };
 
 /** ⭐ BUTTON GROUP */
-const ActionButtons = ({ edit, loading, onEdit, onSave, onCancel, onDelete }) => (
+const ActionButtons = ({ edit, loading, onEdit, onSave }) => (
     <div className="button-bottom-container">
         {!edit ? (
             <CButton color="primary" onClick={onEdit}>
@@ -81,12 +81,7 @@ const ActionButtons = ({ edit, loading, onEdit, onSave, onCancel, onDelete }) =>
                 <CButton color="success" disabled={loading} onClick={onSave}>
                     {loading ? "Saving..." : "✔ Save"}
                 </CButton>
-                <CButton color="secondary" disabled={loading} onClick={onCancel}>
-                    ✖ Cancel
-                </CButton>
-                <CButton color="danger" disabled={loading} onClick={onDelete}>
-                    🗑 Delete
-                </CButton>
+
             </>
         )}
     </div>
@@ -102,7 +97,6 @@ const ClinicDetails = () => {
     const [editDoctor, setEditDoctor] = useState({ doctorName: "", registrationNumber: "", specialization: "" });
     const [doctorErrors, setDoctorErrors] = useState({});
     const [logoUploaded, setLogoUploaded] = useState(false);
-    const [logoUploadStatus, setLogoUploadStatus] = useState("idle");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [formData, setFormData] = useState(null);  // ✨ FIXED (No default state)
     const [activeTab, setActiveTab] = useState(1);
@@ -189,27 +183,39 @@ const ClinicDetails = () => {
 
     const replaceFile = (key, file) => {
         if (!file) return;
-        const r = new FileReader();
 
-        r.onload = async () => {
-            const base64 = r.result.split(",")[1];
-            const updated = { ...formData, [key]: base64 };
-            await updateClinic(clinicId, updated);
-            setFormData(updated);
+        const reader = new FileReader();
 
-            setLogoUploaded(true); // ⭐ mark uploaded
-            toast.success("✅ Logo uploaded successfully!");
+        reader.onload = async () => {
+            try {
+                const base64 = reader.result.split(",")[1];
+
+                // 1️⃣ Update backend
+                await updateClinic(clinicId, { [key]: base64 });
+
+                // 2️⃣ ALWAYS re-fetch fresh data
+                await fetchClinicDetails();
+
+                toast.success("📄 Document replaced successfully");
+            } catch {
+                toast.error("❌ Failed to replace document");
+            }
         };
 
-        r.readAsDataURL(file);
+        reader.readAsDataURL(file);
     };
-
-
 
     const viewPDF = (data) => {
-        const blob = new Blob([Uint8Array.from(atob(data), c => c.charCodeAt(0))], { type: "application/pdf" });
-        window.open(URL.createObjectURL(blob), "_blank");
+        const byteArray = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+
+        // 🔥 release memory
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
     };
+
 
     const tabs = [
         "General Info", "Address & Contact", "Documents",
@@ -545,7 +551,7 @@ const ClinicDetails = () => {
                                 />
                             </div>
                         </CTabPane>
-                        {/* ⭐ TAB 2 - ADDRESS & CONTACT */}
+
                         {/* ⭐ TAB 2 - ADDRESS & CONTACT */}
                         <CTabPane visible={activeTab === 2}>
                             <div className="section-card">
@@ -698,16 +704,7 @@ const ClinicDetails = () => {
                                                             <Download size={15} /> Download
                                                         </CButton>
 
-                                                        <CButton
-                                                            color="danger"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                setFileKeyToDelete(key);
-                                                                setShowFileDeleteModal(true);
-                                                            }}
-                                                        >
-                                                            <Trash2 size={15} /> Delete
-                                                        </CButton>
+
 
 
                                                         <label className="btn btn-warning btn-sm">
@@ -997,19 +994,7 @@ const ClinicDetails = () => {
 
                                                     {editMode.other && (
                                                         <div className="d-flex gap-2 mt-2">
-                                                            {formData.hospitalLogo && (
-                                                                <CButton
-                                                                    color="danger"
-                                                                    size="sm"
-                                                                    className="flex-fill"
-                                                                    onClick={() => {
-                                                                        setFileKeyToDelete("hospitalLogo");
-                                                                        setShowFileDeleteModal(true);
-                                                                    }}
-                                                                >
-                                                                    🗑 Delete
-                                                                </CButton>
-                                                            )}
+
 
                                                             <label className={`btn ${logoUploaded ? "btn-success" : "btn-warning"} btn-sm flex-fill`}>
                                                                 {logoUploaded ? "✔ Uploaded" : "📤 Upload"}
