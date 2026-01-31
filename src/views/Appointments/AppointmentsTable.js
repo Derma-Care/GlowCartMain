@@ -39,7 +39,7 @@ const AppointmentsTable = () => {
   const [filter, setFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [updatingId, setUpdatingId] = useState(null);
   const [error, setError] = useState(null);
 

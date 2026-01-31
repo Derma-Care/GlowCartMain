@@ -52,7 +52,7 @@ const FCMNotification = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [editId, setEditId] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
   const location = useLocation();
   const clinicId = location.state?.clinicId;   // ⬅️ get clinicId from state
 

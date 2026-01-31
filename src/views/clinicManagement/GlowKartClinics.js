@@ -55,7 +55,7 @@ const ClinicManagement = ({ service }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [linkInputValue, setLinkInputValue] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   const [modalVisible, setModalVisible] = useState(false)
   const [inputValue, setInputValue] = useState("")
