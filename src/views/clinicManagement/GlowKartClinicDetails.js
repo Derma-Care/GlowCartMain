@@ -219,49 +219,64 @@ const ClinicDetails = () => {
         return Object.keys(errors).length === 0; // Return true if NO errors
     };
 
-    const replaceFile = (key, file) => {
-        if (!file) return;
+  const replaceFile = (key, file) => {
+    if (!file) return;
 
-        // ⭐ Allowed types
-        let allowedTypes = [
-            "application/pdf",
-            "image/jpeg",
-            "image/png"
-        ];
+    // ⭐ Allowed types
+    let allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png"
+    ];
 
-        // ⭐ Logo must be only images (no PDF)
-        if (key === "hospitalLogo") {
-            allowedTypes = ["image/jpeg", "image/png"];
-        }
+    // ⭐ Logo must be only images
+    if (key === "hospitalLogo") {
+        allowedTypes = ["image/jpeg", "image/png"];
+    }
 
-        if (!allowedTypes.includes(file.type)) {
-            toast.error(key === "hospitalLogo"
+    if (!allowedTypes.includes(file.type)) {
+        toast.error(
+            key === "hospitalLogo"
                 ? "Only JPG or PNG images are allowed for logo"
                 : "Only PDF, JPG, JPEG, PNG files are allowed"
+        );
+        return;
+    }
+
+    // ⭐ File size validation
+    const maxSize =
+        key === "hospitalLogo"
+            ? 2 * 1024 * 1024     // ✅ 2 MB for logo
+            : 500 * 1024;        // ✅ 500 KB for other files
+
+    if (file.size > maxSize) {
+        toast.error(
+            key === "hospitalLogo"
+                ? "Logo must be less than 2 MB"
+                : "File must be less than 500 KB"
+        );
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+        try {
+            const base64 = reader.result.split(",")[1];
+            await updateClinic(clinicId, { [key]: base64 });
+            await fetchClinicDetails();
+            toast.success(
+                key === "hospitalLogo"
+                    ? "Logo updated successfully"
+                    : "Document updated successfully"
             );
-            return;
+        } catch {
+            toast.error("Update failed");
         }
-
-        // ⭐ File size validation (max 500KB)
-        const maxSize = 500 * 1024; // 500 KB
-        if (file.size > maxSize) {
-            toast.error("File must be less than 500 KB");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async () => {
-            try {
-                const base64 = reader.result.split(",")[1];
-                await updateClinic(clinicId, { [key]: base64 });
-                await fetchClinicDetails();
-                toast.success(`${key === "hospitalLogo" ? "Logo" : "Document"} updated successfully`);
-            } catch {
-                toast.error("Update failed");
-            }
-        };
-        reader.readAsDataURL(file);
     };
+
+    reader.readAsDataURL(file);
+};
+
 
 
     // ✅ Extract mime type safely from base64
