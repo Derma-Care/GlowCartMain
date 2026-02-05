@@ -208,7 +208,7 @@ const CustomerViewDetails = () => {
         className="text-white p-3 d-flex justify-content-between align-items-center rounded"
         style={{ background: 'linear-gradient(135deg, var(--color-black), var(--color-bgcolor))', color: 'white' }}
       >
-        <h5 className="mb-1" style={{color:"white"}}>
+        <h5 className="mb-1" style={{ color: "white" }}>
           Customer Details: {customerData.fullName}
         </h5>
 
@@ -216,11 +216,11 @@ const CustomerViewDetails = () => {
           size="sm"
           style={{
             background: '#fff',
-            color: NGK_COLORS.primary,
-            border: 'none',
-            fontWeight: '600',
-            borderRadius: '8px',
-            padding: '6px 14px'
+            color: 'var(--color-black)',
+            border: '1px solid var(--color-black)',
+            fontWeight: 600,
+            borderRadius: 8,
+            padding: '6px 14px',
           }}
           onClick={() => navigate(-1)}
         >

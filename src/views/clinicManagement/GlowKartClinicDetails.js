@@ -219,63 +219,63 @@ const ClinicDetails = () => {
         return Object.keys(errors).length === 0; // Return true if NO errors
     };
 
-  const replaceFile = (key, file) => {
-    if (!file) return;
+    const replaceFile = (key, file) => {
+        if (!file) return;
 
-    // ⭐ Allowed types
-    let allowedTypes = [
-        "application/pdf",
-        "image/jpeg",
-        "image/png"
-    ];
+        // ⭐ Allowed types
+        let allowedTypes = [
+            "application/pdf",
+            "image/jpeg",
+            "image/png"
+        ];
 
-    // ⭐ Logo must be only images
-    if (key === "hospitalLogo") {
-        allowedTypes = ["image/jpeg", "image/png"];
-    }
-
-    if (!allowedTypes.includes(file.type)) {
-        toast.error(
-            key === "hospitalLogo"
-                ? "Only JPG or PNG images are allowed for logo"
-                : "Only PDF, JPG, JPEG, PNG files are allowed"
-        );
-        return;
-    }
-
-    // ⭐ File size validation
-    const maxSize =
-        key === "hospitalLogo"
-            ? 2 * 1024 * 1024     // ✅ 2 MB for logo
-            : 500 * 1024;        // ✅ 500 KB for other files
-
-    if (file.size > maxSize) {
-        toast.error(
-            key === "hospitalLogo"
-                ? "Logo must be less than 2 MB"
-                : "File must be less than 500 KB"
-        );
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async () => {
-        try {
-            const base64 = reader.result.split(",")[1];
-            await updateClinic(clinicId, { [key]: base64 });
-            await fetchClinicDetails();
-            toast.success(
-                key === "hospitalLogo"
-                    ? "Logo updated successfully"
-                    : "Document updated successfully"
-            );
-        } catch {
-            toast.error("Update failed");
+        // ⭐ Logo must be only images
+        if (key === "hospitalLogo") {
+            allowedTypes = ["image/jpeg", "image/png"];
         }
-    };
 
-    reader.readAsDataURL(file);
-};
+        if (!allowedTypes.includes(file.type)) {
+            toast.error(
+                key === "hospitalLogo"
+                    ? "Only JPG or PNG images are allowed for logo"
+                    : "Only PDF, JPG, JPEG, PNG files are allowed"
+            );
+            return;
+        }
+
+        // ⭐ File size validation
+        const maxSize =
+            key === "hospitalLogo"
+                ? 2 * 1024 * 1024     // ✅ 2 MB for logo
+                : 500 * 1024;        // ✅ 500 KB for other files
+
+        if (file.size > maxSize) {
+            toast.error(
+                key === "hospitalLogo"
+                    ? "Logo must be less than 2 MB"
+                    : "File must be less than 500 KB"
+            );
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64 = reader.result.split(",")[1];
+                await updateClinic(clinicId, { [key]: base64 });
+                await fetchClinicDetails();
+                toast.success(
+                    key === "hospitalLogo"
+                        ? "Logo updated successfully"
+                        : "Document updated successfully"
+                );
+            } catch {
+                toast.error("Update failed");
+            }
+        };
+
+        reader.readAsDataURL(file);
+    };
 
 
 
@@ -383,19 +383,20 @@ const ClinicDetails = () => {
                     </h5>
 
                     <div className="d-flex gap-2">
-                        <CButton color="danger" onClick={() => setShowDeleteModal(true)}>
+                        <CButton color="secondary"
+                            style={{ backgroundColor: 'var(--color-black)', color: COLORS.white }} onClick={() => setShowDeleteModal(true)}>
                             Delete Clinic
                         </CButton>
 
                         <CButton
                             size="sm"
                             style={{
-                                background: "#fff",
-                                color: NGK_COLORS.primary,
-                                border: "none",
-                                fontWeight: "600",
-                                borderRadius: "8px",
-                                padding: "6px 14px",
+                                background: '#fff',
+                                color: 'var(--color-black)',
+                                border: '1px solid var(--color-black)',
+                                fontWeight: 600,
+                                borderRadius: 8,
+                                padding: '6px 14px',
                             }}
                             onClick={() => navigate(-1)}
                         >
@@ -423,19 +424,19 @@ const ClinicDetails = () => {
                 <CCardBody>
 
                     {/* ⭐ NAVIGATION TABS */}
-                    <CNav variant="tabs" className="mb-3">
+                    <CNav variant="tabs" className="mt-3 themed-tabs">
                         {tabs.map((t, i) => (
                             <CNavItem key={i}>
                                 <CNavLink
                                     active={activeTab === i + 1}
                                     onClick={() => setActiveTab(i + 1)}
-                                    style={{ cursor: 'pointer' }}
                                 >
                                     {t}
                                 </CNavLink>
                             </CNavItem>
                         ))}
                     </CNav>
+
 
                     <CTabContent>
 
