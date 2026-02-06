@@ -304,17 +304,17 @@ const AdsManagement = () => {
         {/* Tabs */}
         <CNav variant="tabs" className="mb-3">
           <CNavItem>
-            <CNavLink active={activeKey === 1} onClick={() => setActiveKey(1)}>
-              Dashboard Ads
+            <CNavLink active={activeKey === 1} onClick={() => setActiveKey(1)} style={{ cursor: "pointer" }}>
+              Mobile Login
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink active={activeKey === 2} onClick={() => setActiveKey(2)}>
-              Service Ads
+            <CNavLink active={activeKey === 2} onClick={() => setActiveKey(2)} style={{ cursor: "pointer" }}>
+              Mobile Dashboard
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink active={activeKey === 3} onClick={() => setActiveKey(3)}>
+            <CNavLink active={activeKey === 3} onClick={() => setActiveKey(3)} style={{ cursor: "pointer" }}>
               Clinic Ads
             </CNavLink>
           </CNavItem>

@@ -261,9 +261,9 @@ const ProcedureManagement = () => {
                       setCurrentPage(1)
                     }}
                     type="text"
-                    style={{ border: "1px solid #7e3a93" }}
+                     style={{ border: '1px solid var(--color-black)', }}
                   />
-                  <CInputGroupText style={{ border: "1px solid #7e3a93" }}>
+                  <CInputGroupText   style={{ border: '1px solid var(--color-black)', }}>
                     <CIcon icon={cilSearch} />
                   </CInputGroupText>
                 </CInputGroup>
