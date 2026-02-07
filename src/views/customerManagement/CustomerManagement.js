@@ -115,6 +115,8 @@ const CustomerManagement = () => {
       const trimmedQuery = searchQuery.toLowerCase().trim()
 
       const filtered = customerData.filter((customer) => {
+        const customerId = (customer?.customerId || '').toLowerCase()
+    const fullName = (customer?.fullName || '').toLowerCase()
         const fullNameMatch = (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery)
         const mobileMatch = (customer?.mobile || '').toString().startsWith(trimmedQuery)
         const emailMatch = (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
@@ -126,7 +128,7 @@ const CustomerManagement = () => {
           (type) => type.toLowerCase().startsWith(trimmedQuery)
         )
 
-        return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch
+        return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch||customerId||fullName
       })
 
       setFilteredData(filtered)
@@ -134,8 +136,6 @@ const CustomerManagement = () => {
 
     setCurrentPage(1) // ✅ only when SEARCH changes
   }, [searchQuery])
-
-
 
   const handleCustomerViewDetails = (mobile) => {
     navigate(`/customer-management/${mobile}`)

@@ -302,7 +302,7 @@ const AdsManagement = () => {
 
       <CCardBody>
         {/* Tabs */}
-        <CNav variant="tabs" className="mb-3">
+        <CNav variant="tabs" className="mt-3 themed-tabs">
           <CNavItem>
             <CNavLink active={activeKey === 1} onClick={() => setActiveKey(1)} style={{ cursor: "pointer" }}>
               Mobile Login

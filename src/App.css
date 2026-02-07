@@ -114,6 +114,7 @@ a {
   color: var(--tab-inactive-text) !important;
   cursor: pointer;
   font-weight: 600;
+  border-bottom: none !important;
 }
 
 /* Hover */
@@ -126,7 +127,7 @@ a {
 .theme-tab.active {
   background-color: var(--tab-active-bg) !important;
   color: var(--tab-active-text) !important;
-  border-color: var(--tab-active-bg) !important;
+  /* border-color: var(--tab-active-bg) !important; */
 }
 /* 🔥 Override CoreUI tab styles */
 .themed-tabs .nav-link {
