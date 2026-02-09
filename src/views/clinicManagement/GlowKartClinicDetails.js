@@ -654,9 +654,9 @@ const ClinicDetails = () => {
                                             )
                                             .map(([key, val], i) => (
                                                 <CTableRow key={key} className="text-center align-middle">
-                                                    <CTableDataCell >{i + 1}</CTableDataCell>
+                                                    <CTableDataCell>{i + 1}</CTableDataCell>
                                                     <CTableDataCell>{LABELS[key]}</CTableDataCell>
-                                                    <CTableDataCell >
+                                                    <CTableDataCell>
 
                                                         {/* 👁 VIEW */}
                                                         <CButton

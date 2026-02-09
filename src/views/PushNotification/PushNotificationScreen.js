@@ -378,22 +378,22 @@ const FCMNotification = () => {
               {paginatedNotifications.length > 0 ? (
                 paginatedNotifications.map((n, idx) => (
                   <CTableRow key={idx} className="text-center align-middle">
-                    <CTableDataCell >
+                    <CTableDataCell>
                       {(currentPage - 1) * itemsPerPage + idx + 1}
                     </CTableDataCell>
-                    <CTableDataCell >{n.title}</CTableDataCell>
-                    <CTableDataCell >{n.body}</CTableDataCell>
-                    <CTableDataCell >
+                    <CTableDataCell>{n.title}</CTableDataCell>
+                    <CTableDataCell>{n.body}</CTableDataCell>
+                    <CTableDataCell>
                       {new Date(n.createdAt || Date.now()).toLocaleString()}
                     </CTableDataCell>
-                    <CTableDataCell >
+                    <CTableDataCell>
                       {n.image ? (
                         <img src={n.image} alt="notif" style={{ width: 50, borderRadius: 5 }} />
                       ) : (
                         '-'
                       )}
                     </CTableDataCell>
-                    <CTableDataCell >
+                    <CTableDataCell>
                       <div className="d-flex justify-content-end gap-2">
                         <button className="actionBtn view" onClick={() => handleView(n)}>
                           <Eye size={18} />

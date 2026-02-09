@@ -570,7 +570,7 @@ const ServiceManagement = () => {
                       <CTableDataCell>{service.serviceName}</CTableDataCell>
                       <CTableDataCell>{service.categoryName}</CTableDataCell>
                       <CTableDataCell>{service.description || 'N/A'}</CTableDataCell>
-                      <CTableDataCell >
+                      <CTableDataCell>
                         <div className="d-flex justify-content-center align-items-center gap-2">
                           <button
                             // color="primary"

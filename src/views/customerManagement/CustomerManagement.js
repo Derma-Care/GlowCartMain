@@ -492,7 +492,7 @@ const CustomerManagement = () => {
                   {currentItems.map((customer, index) => (
                     <CTableRow key={customer.mobile || index} className="text-center align-middle">
                       {/* Row Checkbox */}
-                      <CTableDataCell >
+                      <CTableDataCell>
                         <input
                           type="checkbox"
                           checked={selectedMobiles.includes(customer.mobile)}
@@ -501,12 +501,12 @@ const CustomerManagement = () => {
                       </CTableDataCell>
 
                       <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
-                      <CTableDataCell >{customer?.fullName || '-'}</CTableDataCell>
-                      <CTableDataCell >{customer?.mobile || '-'}</CTableDataCell>
-                      <CTableDataCell >{customer?.gender || '-'}</CTableDataCell>
-                      <CTableDataCell >{customer?.dob || '-'}</CTableDataCell>
+                      <CTableDataCell>{customer?.fullName || '-'}</CTableDataCell>
+                      <CTableDataCell>{customer?.mobile || '-'}</CTableDataCell>
+                      <CTableDataCell>{customer?.gender || '-'}</CTableDataCell>
+                      <CTableDataCell>{customer?.dob || '-'}</CTableDataCell>
 
-                      <CTableDataCell >
+                      <CTableDataCell>
                         <div className="d-flex justify-content-center align-items-center gap-2">
                           <button
                             className="actionBtn view"

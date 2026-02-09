@@ -122,7 +122,7 @@ const VerifiedClinic_getDetails = ({ service }) => {
                     {currentItems.length > 0 ? (
                       currentItems.map((clinic, index) => (
                         <CTableRow key={clinic?.clinicId || index} className="text-center align-middle">
-                          <CTableDataCell >{indexOfFirstItem + index + 1}</CTableDataCell>
+                          <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
                           <CTableDataCell>{capitalizeWords(clinic?.name || "N/A")}</CTableDataCell>
                           <CTableDataCell>{clinic?.contactNumber || "N/A"}</CTableDataCell>
                           <CTableDataCell>{clinic?.email || "N/A"}</CTableDataCell>

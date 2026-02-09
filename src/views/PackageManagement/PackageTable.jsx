@@ -31,7 +31,7 @@ const PackageTableData = ({ data, onView, onEdit, onDelete }) => {
             <CTableRow key={item.packageId || index} className="text-center align-middle">
               <CTableDataCell style={{ paddingLeft: '40px' }}>{index + 1}</CTableDataCell>
 
-              <CTableDataCell >
+              <CTableDataCell>
                 {capitalizeWords(item.packageName || 'N/A')}
               </CTableDataCell>
 
@@ -55,7 +55,7 @@ const PackageTableData = ({ data, onView, onEdit, onDelete }) => {
                 ₹{item.price || 'NA'}
               </CTableDataCell>
 
-              <CTableDataCell >
+              <CTableDataCell>
                 <div className="d-flex justify-content-center gap-2">
                   <button className="actionBtn" onClick={() => onView(item)} title="View">
                     <Eye size={18} />

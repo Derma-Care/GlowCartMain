@@ -2043,7 +2043,7 @@ const ClinicRegistration = () => {
                         <CTableDataCell>{doctor.registrationNumber || '-'}</CTableDataCell>
                         <CTableDataCell>{doctor.associationNumber || '-'}</CTableDataCell>
                         <CTableDataCell>{doctor.associationName || '-'}</CTableDataCell>
-                        <CTableDataCell >
+                        <CTableDataCell>
                           <div className="d-flex justify-content-center align-items-center gap-2">
                             <button
                               type="button"     // ⛔ Prevent submit

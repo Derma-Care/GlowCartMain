@@ -425,13 +425,13 @@ const CustomerViewDetails = () => {
                               <CTableBody className="pink-table">
                                 {customerData.referredCustomers.map((customer, index) => (
                                   <CTableRow key={customer.customerId} className="text-center align-middle">
-                                    <CTableDataCell >
+                                    <CTableDataCell>
                                       {index + 1}
                                     </CTableDataCell>
                                     <CTableDataCell>
                                       {customer.customerId}
                                     </CTableDataCell>
-                                    <CTableDataCell >
+                                    <CTableDataCell>
                                       {customer.fullName}
                                     </CTableDataCell>
                                   </CTableRow>

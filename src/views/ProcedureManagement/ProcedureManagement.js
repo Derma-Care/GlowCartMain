@@ -312,9 +312,9 @@ useEffect(() => {
               {currentItems.length > 0 ? (
                 currentItems.map((row, index) => (
                   <CTableRow key={row.id} className="text-center align-middle">
-                    <CTableDataCell >{indexOfFirstItem + index + 1}</CTableDataCell>
-                    <CTableDataCell >{row.name}</CTableDataCell>
-                    <CTableDataCell >
+                    <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
+                    <CTableDataCell>{row.name}</CTableDataCell>
+                    <CTableDataCell>
                       <div className="d-flex justify-content-center gap-2">
                         <button className="actionBtn" onClick={() => handleView(row)}><Eye size={18} /></button>
                         <button className="actionBtn" onClick={() => handleEdit(row)}><Edit2 size={18} /></button>

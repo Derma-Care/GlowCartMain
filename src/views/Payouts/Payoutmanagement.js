@@ -271,14 +271,14 @@ const PayoutManagement = () => {
                 {displayData.length > 0 ? (
                   displayData.map((p, index) => (
                     <CTableRow key={`${p.bookingId}-${index}`} className="text-center align-middle">
-                      <CTableDataCell >
+                      <CTableDataCell>
                         {(currentPage - 1) * rowsPerPage + index + 1}
                       </CTableDataCell>
-                      <CTableDataCell >{p.bookingId}</CTableDataCell>
-                      <CTableDataCell >{p.billingName}</CTableDataCell>
+                      <CTableDataCell>{p.bookingId}</CTableDataCell>
+                      <CTableDataCell>{p.billingName}</CTableDataCell>
                       <CTableDataCell>{p.amount}</CTableDataCell>
-                      <CTableDataCell >{p.paymentMethod}</CTableDataCell>
-                      <CTableDataCell >
+                      <CTableDataCell>{p.paymentMethod}</CTableDataCell>
+                      <CTableDataCell>
                         <div className="d-flex justify-content-center align-items-center gap-2">
                           <button
                             className="actionBtn view"

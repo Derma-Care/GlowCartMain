@@ -306,13 +306,13 @@ const sendNGKRegistrationLink = async (email) => {
                     {currentItems.length > 0 ? (
                       currentItems.map((clinic, index) => (
                         <CTableRow key={clinic?.clinicId || index} className="text-center align-middle">
-                          <CTableDataCell >{indexOfFirstItem + index + 1}</CTableDataCell>
-                          <CTableDataCell >{capitalizeWords(clinic?.name || "N/A")}</CTableDataCell>
-                          <CTableDataCell >{clinic?.contactNumber}</CTableDataCell>
-                          <CTableDataCell >{clinic?.email}</CTableDataCell>
-                          <CTableDataCell >{capitalizeWords(clinic?.city || "N/A")}</CTableDataCell>
+                          <CTableDataCell>{indexOfFirstItem + index + 1}</CTableDataCell>
+                          <CTableDataCell>{capitalizeWords(clinic?.name || "N/A")}</CTableDataCell>
+                          <CTableDataCell>{clinic?.contactNumber}</CTableDataCell>
+                          <CTableDataCell>{clinic?.email}</CTableDataCell>
+                          <CTableDataCell>{capitalizeWords(clinic?.city || "N/A")}</CTableDataCell>
                            {/* FIXED STATUS DROPDOWN */}
-                          <CTableDataCell >
+                          <CTableDataCell>
                             <CFormSelect
                               value={mapBackendStatusToUI(clinic?.status)}
                               onChange={(e) => handleStatusChange(e.target.value, clinic.clinicId)}
@@ -330,7 +330,7 @@ const sendNGKRegistrationLink = async (email) => {
                             </CFormSelect>
 
                           </CTableDataCell>
-                          <CTableDataCell >
+                          <CTableDataCell>
                             <button className="actionBtn" title="View" onClick={() =>
                               navigate(`/clinic-details/${clinic.clinicId}`, { state: clinic })
                             }>View</button>
