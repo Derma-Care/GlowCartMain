@@ -409,14 +409,14 @@ const CustomerViewDetails = () => {
                               striped hover responsive
                             >
                               <CTableHead className="pink-table">
-                                <CTableRow>
-                                  <CTableHeaderCell className="text-center" style={{ width: '60px' }}>
+                                <CTableRow className="text-center">
+                                  <CTableHeaderCell >
                                     S.No
                                   </CTableHeaderCell>
-                                  <CTableHeaderCell className="text-center">
+                                  <CTableHeaderCell >
                                     Customer ID
                                   </CTableHeaderCell>
-                                  <CTableHeaderCell className="text-center">
+                                  <CTableHeaderCell >
                                     Customer Name
                                   </CTableHeaderCell>
                                 </CTableRow>
@@ -424,14 +424,14 @@ const CustomerViewDetails = () => {
 
                               <CTableBody className="pink-table">
                                 {customerData.referredCustomers.map((customer, index) => (
-                                  <CTableRow key={customer.customerId}>
-                                    <CTableDataCell className="text-center">
+                                  <CTableRow key={customer.customerId} className="text-center align-middle">
+                                    <CTableDataCell >
                                       {index + 1}
                                     </CTableDataCell>
-                                    <CTableDataCell className="text-center">
+                                    <CTableDataCell>
                                       {customer.customerId}
                                     </CTableDataCell>
-                                    <CTableDataCell className="text-center">
+                                    <CTableDataCell >
                                       {customer.fullName}
                                     </CTableDataCell>
                                   </CTableRow>

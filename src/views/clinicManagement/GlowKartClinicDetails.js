@@ -653,7 +653,7 @@ const ClinicDetails = () => {
                                                 !k.toLowerCase().includes("logo")
                                             )
                                             .map(([key, val], i) => (
-                                                <CTableRow key={key} className="text-center">
+                                                <CTableRow key={key} className="text-center align-middle">
                                                     <CTableDataCell >{i + 1}</CTableDataCell>
                                                     <CTableDataCell>{LABELS[key]}</CTableDataCell>
                                                     <CTableDataCell >
@@ -767,7 +767,7 @@ const ClinicDetails = () => {
 
                                         {/* 🔁 EXISTING DOCTORS LIST */}
                                         {(formData.doctorsList || []).map((doctor, i) => (
-                                            <CTableRow key={i} className="text-center">
+                                            <CTableRow key={i} className="text-center align-middle">
                                                 <CTableDataCell>{i + 1}</CTableDataCell>
 
                                                 {editingIndex === i ? (
