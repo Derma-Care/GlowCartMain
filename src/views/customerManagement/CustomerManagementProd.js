@@ -112,34 +112,41 @@ const CustomerManagementProd = () => {
         fetchCustomers()
     }, [fetchCustomers])
 
-    useEffect(() => {
-        if (!searchQuery.trim()) {
-            setFilteredData(customerData)
-        } else {
-            const trimmedQuery = searchQuery.toLowerCase().trim()
+  useEffect(() => {
+  if (!searchQuery.trim()) {
+    setFilteredData(customerData)
+    setCurrentPage(1)
+    return
+  }
 
-            const filtered = customerData.filter((customer) => {
-                const customerId = (customer?.customerId || '').toLowerCase()
-                const fullName = (customer?.fullName || '').toLowerCase()
-                const fullNameMatch = (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery)
-                const mobileMatch = (customer?.mobile || '').toString().startsWith(trimmedQuery)
-                const emailMatch = (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
+  const trimmedQuery = searchQuery.toLowerCase().trim()
 
-                const addressPincode = customer?.address?.match(/\b\d{6}\b/)?.[0] || ''
-                const pincodeMatch = addressPincode.startsWith(trimmedQuery)
+  const filtered = customerData.filter((customer) => {
+    const fullName = (customer?.fullName || '').toLowerCase()
+    const mobile = (customer?.mobile || '').toString()
+    const email = (customer?.emailId || '').toLowerCase()
+    const customerId = (customer?.customerId || '').toLowerCase()
+    const addressPincode = (customer?.address?.pincode || '').toString()
 
-                const serviceTypeMatch = (customer?.serviceType || []).some(
-                    (type) => type.toLowerCase().startsWith(trimmedQuery)
-                )
+    const serviceTypeMatch = (customer?.serviceType || []).some((type) =>
+      type.toLowerCase().includes(trimmedQuery)
+    )
 
-                return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch || customerId || fullName
-            })
+    return (
+      fullName.includes(trimmedQuery) ||
+      mobile.includes(trimmedQuery) ||
+      email.includes(trimmedQuery) ||
+      customerId.includes(trimmedQuery) ||
+      addressPincode.includes(trimmedQuery) ||
+      serviceTypeMatch
+    )
+  })
 
-            setFilteredData(filtered)
-        }
+  setFilteredData(filtered)
+  setCurrentPage(1)
+}, [searchQuery, customerData])
 
-        setCurrentPage(1) // ✅ only when SEARCH changes
-    }, [searchQuery])
+
 
     const handleCustomerViewDetails = (mobile) => {
         navigate(`/customer-managementProd/${mobile}`)
