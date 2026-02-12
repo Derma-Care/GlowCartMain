@@ -422,83 +422,77 @@ const CustomerManagementProd = () => {
             <ToastContainer />
             {!isAdding ? (
                 <>
-                    <CCard
-                        className="mb-4"
-                        style={{
-                            borderRadius: '14px',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
-                        }}
-                    >
-                        <CCardBody style={{ padding: '20px 24px' }}>
 
-                            {/* ================= HEADER ================= */}
-                            <div
-                                className="d-flex justify-content-between align-items-center"
-                                style={{ marginBottom: '20px' }}
-                            >
-                                <h5 className="mb-0 fw-bold theme-heading">
-                                    Customer Data Management
-                                </h5>
+                    <CCardBody style={{ padding: '20px 24px' }}>
 
-                                <div className="d-flex gap-2">
-                                    <CButton
-                                        onClick={() => navigate("/registration-codes")}
-                                        style={{
-                                            border: '1px solid var(--color-black)',
-                                            backgroundColor: 'transparent',
-                                            padding: '8px 14px',
-                                        }}
-                                    >
-                                        Registration Codes
-                                    </CButton>
+                        {/* ================= HEADER ================= */}
+                        <div
+                            className="d-flex justify-content-between align-items-center"
+                            style={{ marginBottom: '20px' }}
+                        >
+                            <h5 className="mb-0 fw-bold theme-heading">
+                                Customer Data Management
+                            </h5>
 
-                                    <CButton
-                                        style={{
-                                            backgroundColor: 'var(--color-black)',
-                                            color: '#fff',
-                                            padding: '8px 14px',
-                                            border: 'none',
-                                        }}
-                                        active
-                                    >
-                                        Customer Data
-                                    </CButton>
-                                </div>
+                            <div className="d-flex gap-2">
+                                <CButton
+                                    onClick={() => navigate("/registration-codes")}
+                                    style={{
+                                        border: '1px solid var(--color-black)',
+                                        backgroundColor: 'transparent',
+                                        padding: '8px 14px',
+                                    }}
+                                >
+                                    Registration Codes
+                                </CButton>
+
+                                <CButton
+                                    style={{
+                                        backgroundColor: 'var(--color-black)',
+                                        color: '#fff',
+                                        padding: '8px 14px',
+                                        border: 'none',
+                                    }}
+                                    active
+                                >
+                                    Customer Data
+                                </CButton>
                             </div>
+                        </div>
+                        <br />
+                        {/* ================= SEARCH + DELETE ================= */}
+                        <CRow
+                            className="align-items-center"
+                            style={{ marginBottom: '20px' }}
+                        >
+                            <CCol md={9}>
+                                <CForm style={{ width: '60%' }}>
+                                    <CInputGroup>
+                                        <CFormInput
+                                            type="text"
+                                            placeholder="Search by name, mobile, or email"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            style={{
+                                                border: '1px solid var(--color-black)',
+                                                padding: '10px 12px',
+                                            }}
+                                        />
+                                        <CInputGroupText
+                                            style={{
+                                                border: '1px solid var(--color-black)',
+                                                backgroundColor: '#fff',
+                                            }}
+                                        >
+                                            <CIcon icon={cilSearch} />
+                                        </CInputGroupText>
+                                    </CInputGroup>
+                                </CForm>
+                            </CCol>
 
-                            {/* ================= SEARCH + DELETE ================= */}
-                            <CRow
-                                className="align-items-center"
-                                style={{ marginBottom: '20px' }}
-                            >
-                                <CCol md={9}>
-                                    <CForm style={{ width: '60%' }}>
-                                        <CInputGroup>
-                                            <CFormInput
-                                                type="text"
-                                                placeholder="Search by name, mobile, or email"
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                style={{
-                                                    border: '1px solid var(--color-black)',
-                                                    padding: '10px 12px',
-                                                }}
-                                            />
-                                            <CInputGroupText
-                                                style={{
-                                                    border: '1px solid var(--color-black)',
-                                                    backgroundColor: '#fff',
-                                                }}
-                                            >
-                                                <CIcon icon={cilSearch} />
-                                            </CInputGroupText>
-                                        </CInputGroup>
-                                    </CForm>
-                                </CCol>
-
-                                <CCol md={3} className="d-flex justify-content-end">
+                            <CCol md={3} className="d-flex justify-content-end">
+                                {selectedMobiles.length > 0 && (
                                     <CButton
-                                        disabled={selectedMobiles.length === 0}
                                         onClick={() => {
                                             setIsMultiDelete(true)
                                             setIsModalVisible(true)
@@ -513,118 +507,130 @@ const CustomerManagementProd = () => {
                                     >
                                         Delete Selected ({selectedMobiles.length})
                                     </CButton>
-                                </CCol>
-                            </CRow>
+                                )}
+                            </CCol>
+                        </CRow>
 
-                            {/* ================= TABLE ================= */}
-                            {loading ? (
-                                <div style={{ padding: '30px 0', textAlign: 'center' }}>
-                                    <LoadingIndicator message="Loading customer data..." />
-                                </div>
-                            ) : error ? (
-                                <div style={centeredMessageStyle}>{error}</div>
-                            ) : filteredData.length === 0 ? (
-                                <div style={centeredMessageStyle}>No Customer Data Found</div>
-                            ) : (
-                                <>
-                                    <CTable striped hover responsive style={{ width: '100%' }}>
-                                        <CTableHead className="pink-table">
-                                            <CTableRow className="text-center">
-                                                {[
-                                                    'Select',
-                                                    'S.No',
-                                                    'Full Name',
-                                                    'Mobile Number',
-                                                    'Gender',
-                                                    'Date Of Birth',
-                                                    'Actions',
-                                                ].map((title) => (
-                                                    <CTableHeaderCell
-                                                        key={title}
-                                                        style={{ padding: '14px 16px' }}
-                                                    >
-                                                        {title}
-                                                    </CTableHeaderCell>
-                                                ))}
-                                            </CTableRow>
-                                        </CTableHead>
 
-                                        <CTableBody className="pink-table">
-                                            {currentItems.map((customer, index) => (
-                                                <CTableRow
-                                                    key={customer.mobile || index}
-                                                    className="text-center align-middle"
-                                                    style={{ height: '56px' }}
+                        {/* ================= TABLE ================= */}
+                        {loading ? (
+                            <div style={{ padding: '30px 0', textAlign: 'center' }}>
+                                <LoadingIndicator message="Loading customer data..." />
+                            </div>
+                        ) : error ? (
+                            <div style={centeredMessageStyle}>{error}</div>
+                        ) : filteredData.length === 0 ? (
+                            <div style={centeredMessageStyle}>No Customer Data Found</div>
+                        ) : (
+                            <>
+                                <CTable striped hover responsive style={{ width: '100%' }}>
+                                    <CTableHead className="pink-table">
+                                        <CTableRow className="text-center">
+                                            {[
+                                                'Select',
+                                                'S.No',
+                                                'Full Name',
+                                                'Mobile Number',
+                                                'Gender',
+                                                'Date Of Birth',
+                                                'Actions',
+                                            ].map((title) => (
+                                                <CTableHeaderCell
+                                                    key={title}
+                                                    style={{ padding: '14px 16px' }}
                                                 >
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedMobiles.includes(customer.mobile)}
-                                                            onChange={() => handleSelectOne(customer.mobile)}
-                                                        />
-                                                    </CTableDataCell>
+                                                    {title}
+                                                </CTableHeaderCell>
+                                            ))}
+                                        </CTableRow>
+                                    </CTableHead>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        {indexOfFirstItem + index + 1}
-                                                    </CTableDataCell>
+                                    <CTableBody className="pink-table">
+                                        {currentItems.map((customer, index) => (
+                                            <CTableRow
+                                                key={customer.mobile || index}
+                                                className="text-center align-middle"
+                                                style={{ height: '56px' }}
+                                            >
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedMobiles.includes(customer.mobile)}
+                                                        onChange={() => handleSelectOne(customer.mobile)}
+                                                    />
+                                                </CTableDataCell>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        {customer?.fullName || '-'}
-                                                    </CTableDataCell>
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {indexOfFirstItem + index + 1}
+                                                </CTableDataCell>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        {customer?.mobile || '-'}
-                                                    </CTableDataCell>
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {customer?.fullName || '-'}
+                                                </CTableDataCell>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        {customer?.gender || '-'}
-                                                    </CTableDataCell>
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {customer?.mobile || '-'}
+                                                </CTableDataCell>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        {customer?.dob || '-'}
-                                                    </CTableDataCell>
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {customer?.gender || '-'}
+                                                </CTableDataCell>
 
-                                                    <CTableDataCell style={{ padding: '14px 16px' }}>
-                                                        <div
-                                                            style={{
-                                                                display: 'flex',
-                                                                justifyContent: 'center',
-                                                                gap: '10px',
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {customer?.dob || '-'}
+                                                </CTableDataCell>
+
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            gap: '10px',
+                                                        }}
+                                                    >
+                                                        <button
+                                                            className="actionBtn view"
+                                                            style={{ padding: '8px 10px', borderRadius: '8px' }}
+                                                            onClick={() =>
+                                                                handleCustomerViewDetails(customer?.mobile)
+                                                            }
+                                                        >
+                                                            <Eye size={18} />
+                                                        </button>
+
+                                                        <button
+                                                            className="actionBtn delete"
+                                                            style={{ padding: '8px 10px', borderRadius: '8px' }}
+                                                            onClick={() => {
+                                                                setCustomerIdToDelete(customer?.mobile)
+                                                                setIsMultiDelete(false)
+                                                                setIsModalVisible(true)
                                                             }}
                                                         >
-                                                            <button
-                                                                className="actionBtn view"
-                                                                style={{ padding: '8px 10px', borderRadius: '8px' }}
-                                                                onClick={() =>
-                                                                    handleCustomerViewDetails(customer?.mobile)
-                                                                }
-                                                            >
-                                                                <Eye size={18} />
-                                                            </button>
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                </CTableDataCell>
+                                            </CTableRow>
+                                        ))}
+                                    </CTableBody>
+                                </CTable>
 
-                                                            <button
-                                                                className="actionBtn delete"
-                                                                style={{ padding: '8px 10px', borderRadius: '8px' }}
-                                                                onClick={() => {
-                                                                    setCustomerIdToDelete(customer?.mobile)
-                                                                    setIsMultiDelete(false)
-                                                                    setIsModalVisible(true)
-                                                                }}
-                                                            >
-                                                                <Trash2 size={18} />
-                                                            </button>
-                                                        </div>
-                                                    </CTableDataCell>
-                                                </CTableRow>
-                                            ))}
-                                        </CTableBody>
-                                    </CTable>
-
-                                    {/* ================= PAGINATION ================= */}
-                                    <div
-                                        className="d-flex justify-content-between align-items-center mt-4"
-                                        style={{ paddingTop: '10px' }}
-                                    >
+                                {/* ================= PAGINATION ================= */}
+                                {/* ================= FIXED PAGINATION ================= */}
+                                <div
+                                    style={{
+                                        position: 'fixed',
+                                        bottom: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        backgroundColor: '#fff',
+                                        borderTop: '1px solid #e0e0e0',
+                                        padding: '12px 24px',
+                                        zIndex: 1000,
+                                    }}
+                                >
+                                    <div className="d-flex justify-content-between align-items-center">
                                         <div>
                                             <label className="me-2">Rows per page:</label>
                                             <CFormSelect
@@ -642,8 +648,8 @@ const CustomerManagementProd = () => {
                                             </CFormSelect>
                                         </div>
 
-                                        <div>
-                                            <div style={{ marginBottom: '6px', textAlign: 'right' }}>
+                                        <div className="text-end">
+                                            <div style={{ marginBottom: '6px' }}>
                                                 Showing {indexOfFirstItem + 1} to{' '}
                                                 {Math.min(indexOfLastItem, filteredData.length)} of{' '}
                                                 {filteredData.length} entries
@@ -661,8 +667,7 @@ const CustomerManagementProd = () => {
                                                     .filter((page) => {
                                                         if (totalPages <= 5) return true
                                                         if (currentPage <= 3) return page <= 5
-                                                        if (currentPage >= totalPages - 2)
-                                                            return page >= totalPages - 4
+                                                        if (currentPage >= totalPages - 2) return page >= totalPages - 4
                                                         return page >= currentPage - 2 && page <= currentPage + 2
                                                     })
                                                     .map((page) => (
@@ -684,10 +689,12 @@ const CustomerManagementProd = () => {
                                             </CPagination>
                                         </div>
                                     </div>
-                                </>
-                            )}
-                        </CCardBody>
-                    </CCard>
+                                </div>
+
+                            </>
+                        )}
+                    </CCardBody>
+
                 </>
 
             ) : (

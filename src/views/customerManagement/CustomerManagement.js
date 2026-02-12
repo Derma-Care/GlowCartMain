@@ -116,7 +116,7 @@ const CustomerManagement = () => {
 
       const filtered = customerData.filter((customer) => {
         const customerId = (customer?.customerId || '').toLowerCase()
-    const fullName = (customer?.fullName || '').toLowerCase()
+        const fullName = (customer?.fullName || '').toLowerCase()
         const fullNameMatch = (customer?.fullName || '').toLowerCase().startsWith(trimmedQuery)
         const mobileMatch = (customer?.mobile || '').toString().startsWith(trimmedQuery)
         const emailMatch = (customer?.emailId || '').toLowerCase().startsWith(trimmedQuery)
@@ -128,7 +128,7 @@ const CustomerManagement = () => {
           (type) => type.toLowerCase().startsWith(trimmedQuery)
         )
 
-        return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch||customerId||fullName
+        return fullNameMatch || mobileMatch || emailMatch || pincodeMatch || serviceTypeMatch || customerId || fullName
       })
 
       setFilteredData(filtered)
@@ -441,17 +441,19 @@ const CustomerManagement = () => {
 
             {/* 🗑 Delete Selected */}
             <div className="col-md-3 d-flex justify-content-end">
-              <CButton
-                color="secondary"
-                style={{ backgroundColor: 'var(--color-black)', color: COLORS.white }}
-                disabled={selectedMobiles.length === 0}
-                onClick={() => {
-                  setIsMultiDelete(true)
-                  setIsModalVisible(true)
-                }}
-              >
-                Delete Selected ({selectedMobiles.length})
-              </CButton>
+              {selectedMobiles.length > 0 && (
+                <CButton
+                  color="secondary"
+                  style={{ backgroundColor: 'var(--color-black)', color: COLORS.white }}
+                  disabled={selectedMobiles.length === 0}
+                  onClick={() => {
+                    setIsMultiDelete(true)
+                    setIsModalVisible(true)
+                  }}
+                >
+                  Delete Selected ({selectedMobiles.length})
+                </CButton>
+              )}
             </div>
           </CRow>
 
