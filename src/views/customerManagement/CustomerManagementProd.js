@@ -112,39 +112,39 @@ const CustomerManagementProd = () => {
         fetchCustomers()
     }, [fetchCustomers])
 
-  useEffect(() => {
-  if (!searchQuery.trim()) {
-    setFilteredData(customerData)
-    setCurrentPage(1)
-    return
-  }
+    useEffect(() => {
+        if (!searchQuery.trim()) {
+            setFilteredData(customerData)
+            setCurrentPage(1)
+            return
+        }
 
-  const trimmedQuery = searchQuery.toLowerCase().trim()
+        const trimmedQuery = searchQuery.toLowerCase().trim()
 
-  const filtered = customerData.filter((customer) => {
-    const fullName = (customer?.fullName || '').toLowerCase()
-    const mobile = (customer?.mobile || '').toString()
-    const email = (customer?.emailId || '').toLowerCase()
-    const customerId = (customer?.customerId || '').toLowerCase()
-    const addressPincode = (customer?.address?.pincode || '').toString()
+        const filtered = customerData.filter((customer) => {
+            const fullName = (customer?.fullName || '').toLowerCase()
+            const mobile = (customer?.mobile || '').toString()
+            const registrationCode = (customer?.registrationCode || '').toLowerCase()
+            const customerId = (customer?.customerId || '').toLowerCase()
+            const addressPincode = (customer?.address?.pincode || '').toString()
 
-    const serviceTypeMatch = (customer?.serviceType || []).some((type) =>
-      type.toLowerCase().includes(trimmedQuery)
-    )
+            const serviceTypeMatch = (customer?.serviceType || []).some((type) =>
+                type.toLowerCase().includes(trimmedQuery)
+            )
 
-    return (
-      fullName.includes(trimmedQuery) ||
-      mobile.includes(trimmedQuery) ||
-      email.includes(trimmedQuery) ||
-      customerId.includes(trimmedQuery) ||
-      addressPincode.includes(trimmedQuery) ||
-      serviceTypeMatch
-    )
-  })
+            return (
+                fullName.includes(trimmedQuery) ||
+                mobile.includes(trimmedQuery) ||
+                registrationCode.includes(trimmedQuery) ||
+                customerId.includes(trimmedQuery) ||
+                addressPincode.includes(trimmedQuery) ||
+                serviceTypeMatch
+            )
+        })
 
-  setFilteredData(filtered)
-  setCurrentPage(1)
-}, [searchQuery, customerData])
+        setFilteredData(filtered)
+        setCurrentPage(1)
+    }, [searchQuery, customerData])
 
 
 
@@ -477,7 +477,7 @@ const CustomerManagementProd = () => {
                                     <CInputGroup>
                                         <CFormInput
                                             type="text"
-                                            placeholder="Search by name, mobile, or email"
+                                            placeholder="Search by name, mobile, or registrationcode"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             style={{
@@ -540,6 +540,7 @@ const CustomerManagementProd = () => {
                                                 'Mobile Number',
                                                 'Gender',
                                                 'Date Of Birth',
+                                                'Registration Code',
                                                 'Actions',
                                             ].map((title) => (
                                                 <CTableHeaderCell
@@ -585,6 +586,9 @@ const CustomerManagementProd = () => {
 
                                                 <CTableDataCell style={{ padding: '14px 16px' }}>
                                                     {customer?.dob || '-'}
+                                                </CTableDataCell>
+                                                <CTableDataCell style={{ padding: '14px 16px' }}>
+                                                    {customer?.registrationCode || 'NA'}
                                                 </CTableDataCell>
 
                                                 <CTableDataCell style={{ padding: '14px 16px' }}>
