@@ -620,13 +620,37 @@ const CustomerManagementProd = () => {
                                                         >
                                                             <Trash2 size={18} />
                                                         </button>
+
                                                     </div>
                                                 </CTableDataCell>
                                             </CTableRow>
                                         ))}
                                     </CTableBody>
                                 </CTable>
-
+                                <ConfirmationModal
+                                    isVisible={isModalVisible}
+                                    message={
+                                        isMultiDelete
+                                            ? `Are you sure you want to delete ${selectedMobiles.length} customers?`
+                                            : 'Are you sure you want to delete this customer?'
+                                    }
+                                    confirmText={
+                                        delloading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2 text-white" role="status" />
+                                                Deleting...
+                                            </>
+                                        ) : (
+                                            'Yes, Delete'
+                                        )
+                                    }
+                                    onConfirm={confirmDeleteCustomer}
+                                    onCancel={() => {
+                                        setIsModalVisible(false)
+                                        setCustomerIdToDelete(null)
+                                        setIsMultiDelete(false)
+                                    }}
+                                />
                                 {/* ================= PAGINATION ================= */}
                                 {/* ================= FIXED PAGINATION ================= */}
                                 <div
