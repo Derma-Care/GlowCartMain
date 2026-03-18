@@ -384,7 +384,7 @@ const ClinicRegistration = () => {
     if (!formData.fireSafetyCertificate) {
       newErrors.fireSafetyCertificate = 'Please upload at least one document'
     }
-  
+
     if (!formData.gstRegistrationCertificate) {
       newErrors.gstRegistrationCertificate = 'Please upload at least one document'
     }
@@ -1299,14 +1299,23 @@ const ClinicRegistration = () => {
                   type="text"
                   name="panNumber"
                   value={formData.panNumber || ""}
+                  maxLength={10}
                   onChange={(e) => {
-                    const { name, value } = e.target;
+                    let { name, value } = e.target;
+
+                    // ✅ Convert to uppercase automatically
+                    value = value.toUpperCase();
+
+                    // ✅ Optional: remove spaces
+                    value = value.replace(/\s/g, '');
+
                     setFormData((prev) => ({ ...prev, [name]: value }));
+
                     const error =
                       !value.trim()
                         ? "PAN Number is required"
-                        : !/[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(value)
-                          ? "Invalid PAN format"
+                        : !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value)
+                          ? "Invalid PAN format (Ex: ABCDE1234F)"
                           : "";
 
                     setErrors((prev) => ({ ...prev, [name]: error || undefined }));
@@ -1555,7 +1564,7 @@ const ClinicRegistration = () => {
                       try {
                         new URL(value); // still checks URL format
                       } catch {
-                       
+
                       }
                     }
 
