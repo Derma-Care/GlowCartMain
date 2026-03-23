@@ -26,7 +26,7 @@ import {
 import { AllClinicData, BASE_URL, BASE_URL_API, CLINIC_REGISTRATION_URL, ClinicAllData, getAllQuestions, postAllQuestionsAndAnswers } from '../../baseUrl'
 import { CategoryData } from '../categoryManagement/CategoryAPI'
 import sendDermaCareOnboardingEmail from '../../Utils/Emailjs'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { getClinicTimings } from './GlowKartgetTimingsAPI'
 import ClinicOnboardingSuccess from './SuccessOnboradClinic'
@@ -807,7 +807,7 @@ const ClinicRegistration = () => {
 
   return (
     <div className="container mt-4">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <CCard className="shadow-sm border-0 rounded-3">
         <CCardHeader className="text-center" style={{ backgroundColor: NGK_COLORS.primary, color: COLORS.white }}>
           <h3 className="mb-0">Clinic Registration</h3>
@@ -1842,7 +1842,9 @@ const ClinicRegistration = () => {
               {/* OTHERS FILE UPLOAD */}
               <CCol md={6}>
                 <CTooltip content="NABH Accreditation / Aesthetic Procedure Training Certificate">
-                  <CFormLabel>Others (NABH / Aesthetic Training)</CFormLabel>
+                  <span>
+                    <CFormLabel>Others (NABH / Aesthetic Training)</CFormLabel>
+                  </span>
                 </CTooltip>
 
                 <CFormInput
@@ -2037,7 +2039,9 @@ const ClinicRegistration = () => {
                 </CTable>
               </div>
             )}
-            <CModal visible={isModalVisible} onClose={() => setIsModalVisible(false)}>
+            <CModal visible={!!isModalVisible}
+              onClose={() => setIsModalVisible(false)}
+              backdrop="static">
               <CModalHeader>
                 <CModalTitle>Confirm Delete</CModalTitle>
               </CModalHeader>
@@ -2054,8 +2058,12 @@ const ClinicRegistration = () => {
               </CModalFooter>
             </CModal>
 
-            <CModal visible={showNabhModal} onClose={() => setShowNabhModal(false)} size="lg" className="custom-modal"
-              backdrop="static">
+            <CModal
+              visible={!!showNabhModal}
+              onClose={() => setShowNabhModal(false)}
+              size="lg"
+              backdrop="static"
+            >
               <CModalHeader>
                 <CModalTitle>NABH Questionnaire</CModalTitle>
               </CModalHeader>
@@ -2135,7 +2143,8 @@ const ClinicRegistration = () => {
           </CForm>
 
           <CModal
-            visible={showSuccessModal}
+            visible={!!showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
             alignment="center"
             backdrop="static"
           >
